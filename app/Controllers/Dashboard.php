@@ -19,9 +19,12 @@ class Dashboard extends BaseController
         // Load the model and fetch user data
         $userProfileModel = new UserProfileModel();
         $fullName = $userProfileModel->getUserFullNameById($user_id); // Fetch full name
+        $family=$userProfileModel->getFamilyNamebyId($user_id);
 
-        // Pass the full name to the view
-        return view('tabs/dashboard', ['fullName' => $fullName]);
+        return view('tabs/dashboard', [
+            'fullName' => $fullName,
+            'family'    => $family
+        ]);
     }
 
     public function family_jumuia()

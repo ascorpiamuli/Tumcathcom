@@ -33,6 +33,18 @@ class UserProfileModel extends Model
 
         return null; // If user not found, return null
     }
+    public function getFamilyNamebyId($user_id){
+        $user = $this->select('family_jumuia')
+        ->where('user_id', $user_id)
+        ->first();
+        if ($user) {
+            $familyUnderscores=str_replace('_', ' ', $user['family_jumuia']);
+            $family= ucwords(strtolower($familyUnderscores));
+
+            return $family; // Return the full jumuia without Undercores
+        }
+
+    }
 }
 
 

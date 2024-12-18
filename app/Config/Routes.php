@@ -39,7 +39,7 @@ $routes->group('tabs', function($routes) {
     // Liturgy routes
     $routes->get('daily_prayers', 'Dashboard::daily_prayers');
     $routes->get('choir', 'Dashboard::choir');
-    $routes->get('readings', 'Dashboard::readings');
+   // $routes->get('readings', 'Dashboard::readings');
 
     // Events and Settings
     $routes->get('events', 'Dashboard::events');
@@ -53,3 +53,6 @@ $routes->group('tabs', function($routes) {
     $routes->get('welfare', 'Dashboard::welfare');
     $routes->get('liturgical_classes', 'Dashboard::liturgical_classes');
 });
+$routes->get('scraper', 'Scraper::fetchSaintDetails');
+$routes->get('readings','Scraper::fetchReadings');
+$routes->get('prayers','Scraper::fetchPrayers');
