@@ -53,6 +53,6 @@ $routes->group('tabs', function($routes) {
     $routes->get('welfare', 'Dashboard::welfare');
     $routes->get('liturgical_classes', 'Dashboard::liturgical_classes');
 });
-$routes->get('scraper', 'Scraper::fetchSaintDetails');
+$routes->get('saints', 'Scraper::fetchAndSaveSaints');
 $routes->get('readings','Scraper::fetchReadings');
 $routes->get('prayers','Scraper::fetchPrayers');

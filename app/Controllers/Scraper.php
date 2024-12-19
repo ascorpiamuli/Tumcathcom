@@ -2,92 +2,135 @@
 
 namespace App\Controllers;
 
+
 class Scraper extends BaseController
 {
-    public function fetchSaintDetails()
+
+    public function fetchAndSaveSaints()
     {
-        log_message('info', 'Starting fetchAllDetails method');
-
-        // Target URL
-        $url = 'https://www.catholic.org/saints/saint.php?saint_id=75';
-        log_message('info', 'Target URL: ' . $url);
-
+        // Increase the maximum execution time for this script
+        ini_set('max_execution_time', 3000); // Set it to 5 minutes
+    
+        $saintModel = new \App\Models\SaintsModel();
+        $maxSaints = 1000;
+        $batchSize = 10; // Number of saints to process at a time
+    
+        // Loop through saints
+        for ($saintId =755; $saintId <= $maxSaints; $saintId++) {
+            // Process in batches
+            if ($saintId % $batchSize == 0) {
+                // Sleep to avoid overloading the server (adjust as needed)
+                sleep(2); 
+            }
+    
+            // Construct URL dynamically
+            $url = "https://www.catholic.org/saints/saint.php?saint_id=" . $saintId;
+    
+            // Fetch saint details
+            $saintData = $this->fetchSaintDetails($url, $saintId);
+    
+            if ($saintData) {
+                // Check if the saint already exists
+                if (!$saintModel->where('saint_id', $saintId)->first()) {
+                    // Save saint details to the database
+                    $saintModel->insert($saintData);
+                    log_message('info', "Saved Saint ID $saintId: " . $saintData['title']);
+                } else {
+                    log_message('info', "Saint ID $saintId already exists. Skipping...");
+                }
+            }
+        }
+    
+        echo "Finished fetching and saving all saints!";
+    }
+    
+    
+    private function fetchSaintDetails($url, $saintId)
+    {
         // Initialize cURL session
         $ch = curl_init();
-
-        // Set cURL options
+    
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-
-        // Execute cURL request
+    
+        // Set cURL timeout to prevent hanging requests
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30); // 30 seconds timeout for each request
+    
         $htmlContent = curl_exec($ch);
-
-        // Check for errors
+    
         if (curl_errno($ch)) {
-            log_message('error', 'cURL Error: ' . curl_error($ch));
+            log_message('error', "cURL Error for Saint ID $saintId: " . curl_error($ch));
             curl_close($ch);
-            return;
+            return null;
         }
-
-        // Close cURL session
+    
         curl_close($ch);
-
-        log_message('info', 'Fetched HTML content length: ' . strlen($htmlContent));
-
-        // Save HTML content for debugging
-        file_put_contents('debug_fetched.html', $htmlContent);
-        log_message('info', 'HTML content saved to debug_fetched.html');
-
-        // Load the HTML content into DOMDocument
-        libxml_use_internal_errors(true); // Suppress DOM parsing warnings
+    
+        // Parse the HTML using DOMDocument and XPath
+        libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
-        $dom->loadHTML($htmlContent);
-        libxml_clear_errors();
-        log_message('info', 'DOMDocument initialized successfully');
-
-        // Use DOMXPath to extract the desired content
+        @$dom->loadHTML($htmlContent);
         $xpath = new \DOMXPath($dom);
-        log_message('info', 'DOMXPath initialized successfully');
-
-        // Fetch the first image inside the "saintContent" div with ID
-        $imageNode = $xpath->query("//div[@id='saintContent']//img")->item(0);
-        $imageSrc = $imageNode ? $imageNode->getAttribute('src') : 'No Image Found';
-
-        // Log and store the image data
-        log_message('info', 'First image inside saintContent: ' . $imageSrc);
-
-        // Query all <p> tags inside "saintContent" with ID
-        $pTags = $xpath->query("//div[@id='saintContent']//p");
-
-        log_message('info', 'Number of <p> tags found inside saintContent: ' . $pTags->length);
-
-        // Store the extracted content in an array
-        $scrapedData = [
-            'image' => $imageSrc,
-            'paragraphs' => []
-        ];
-
-        // Check if any <p> tags were found
-        if ($pTags->length > 0) {
-            foreach ($pTags as $pTag) {
-                // Extract the text content of each <p> tag
-                $content = trim($pTag->textContent);
-
-                // Log and add the content to the array
-                log_message('info', 'Extracted <p> content: ' . $content);
-                $scrapedData['paragraphs'][] = $content;
-            }
-        } else {
-            log_message('error', 'No <p> tags found in saintContent.');
-            $scrapedData['paragraphs'][] = 'No <p> tags found in saintContent.';
+        libxml_clear_errors();
+    
+        // Extract details
+        $titleNode = $xpath->query("//div[@id='content']//h1")->item(0);
+        $title = $titleNode ? trim($titleNode->textContent) : null;
+    
+        $youtubeNodes = $xpath->query("//div[@class='youtubeSpeed']//a");
+        $youtubeLinks = [];
+        foreach ($youtubeNodes as $node) {
+            $youtubeLinks[] = $node->getAttribute('href');
         }
-
-        log_message('info', 'Finished fetchAllDetails method');
-
-        // Return the data as JSON
-        return $this->response->setJSON($scrapedData);
+    
+        // Extract feast day, patron, birth, and death
+        $detailsNode = $xpath->query("//div[@class='panel-body']")->item(0);
+        $details = $detailsNode ? $detailsNode->textContent : null;
+    
+        $feastDay = null;
+        $patron = null;
+        $birth = null;
+        $death = null;
+    
+        if ($details) {
+            preg_match('/Feastday:\s*([^\n]+)/', $details, $feastDayMatch);
+            preg_match('/Patron:\s*([^\n]+)/', $details, $patronMatch);
+            preg_match('/Birth:\s*(\d+)/', $details, $birthMatch);
+            preg_match('/Death:\s*(\d+)/', $details, $deathMatch);
+    
+            $feastDay = $feastDayMatch[1] ?? null;
+            $patron = $patronMatch[1] ?? null;
+            $birth = $birthMatch[1] ?? null;
+            $death = $deathMatch[1] ?? null;
+        }
+    
+        $imageNode = $xpath->query("//div[@id='saintContent']//img")->item(0);
+        $saintImage = $imageNode ? $imageNode->getAttribute('src') : null;
+    
+        $paragraphNodes = $xpath->query("//div[@id='saintContent']//p");
+        $paragraphs = [];
+        foreach ($paragraphNodes as $node) {
+            $paragraphs[] = trim($node->textContent);
+        }
+    
+        // Return extracted data
+        return [
+            'saint_id' => $saintId,
+            'title' => $title,
+            'feast_day' => $feastDay,
+            'patron' => $patron,
+            'birth' => $birth,
+            'death' => $death,
+            'saint_image' => $saintImage,
+            'paragraphs' => json_encode($paragraphs),
+            'youtube_links' => json_encode($youtubeLinks),
+        ];
     }
+    
+    
+
+    
     public function fetchReadings()
     {
         log_message('info', 'Starting fetchReadings method');
