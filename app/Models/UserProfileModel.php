@@ -33,18 +33,27 @@ class UserProfileModel extends Model
 
         return null; // If user not found, return null
     }
-    public function getFamilyNamebyId($user_id){
-        $user = $this->select('family_jumuia')
+public function getFamilyNamebyId($user_id)
+{
+    $user = $this->select('family_jumuia')
         ->where('user_id', $user_id)
         ->first();
-        if ($user) {
-            $familyUnderscores=str_replace('_', ' ', $user['family_jumuia']);
-            $family= ucwords(strtolower($familyUnderscores));
 
-            return $family; // Return the full jumuia without Undercores
-        }
+    if ($user) {
+        // Replace underscores with spaces
+        $familyUnderscores = str_replace('_', ' ', $user['family_jumuia']);
+        
+        // Capitalize words
+        $family = ucwords(strtolower($familyUnderscores));
+        
+        // Add a period after "St" if it doesn't have one
+        $familyWithDot = preg_replace('/\bSt\s/', 'St. ', $family);
 
+        return $familyWithDot; // Return the formatted family name
     }
+}
+
+    
 }
 
 

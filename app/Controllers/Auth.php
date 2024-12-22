@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\UserProfileModel;
 use App\Models\UserAuthenticationModel;
+use App\Models\SaintsModel;
 use CodeIgniter\Controller;
 
 class Auth extends Controller
@@ -106,6 +107,7 @@ class Auth extends Controller
             if (!$this->validate($validationRules)) {
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
+            $family=$this->request->getPost('family');
 
             $data = [
                 'user_id' => $userId,
@@ -114,12 +116,21 @@ class Auth extends Controller
                 'registration_number' => $this->request->getPost('registration_number'),
                 'dob' => $this->request->getPost('dob'),
                 'year_of_study' => $this->request->getPost('year_of_study'),
-                'family_jumuia' => $this->request->getPost('family'),
+                'family_jumuia' => $family,
                 'course' => $this->request->getPost('course'),
                 'baptized' => $this->request->getPost('baptized') === 'yes' ? true : false,
                 'confirmed' => $this->request->getPost('confirmed') === 'yes' ? true : false,
                 'created_at' => date('Y-m-d H:i:s'),
             ];
+            $saintsModel = new SaintsModel();
+            // Query the saints database to check if the family exists
+            $validFamily = $saintsModel->where('title', $family)->first();
+            // If the family doesn't exist in the database, set an error and redirect back
+            if (!$validFamily) {
+                // Set an error message and redirect back to the register page
+                session()->setFlashdata('error', 'Please select a valid family name From the Dropdown.');
+                return redirect()->to('/auth/register');
+            }
 
             if ($userProfileModel->save($data)) {
                 //  flash success message

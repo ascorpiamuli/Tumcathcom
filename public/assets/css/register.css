@@ -1,0 +1,163 @@
+
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    height: 100vh;
+    display: flex;
+}
+.search-dropdown-container {
+    display: flex;
+    flex-direction: column; /* Stack input and dropdown vertically */
+    gap: 10px; /* Space between input and dropdown */
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+
+/* Left Sidebar */
+.sidebar-left {
+    width: 350px;
+    background-color: #6a1b9a; /* Purple color */
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 20px;
+    box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Make sidebar fixed */
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Ensure sidebar is above other content */
+}
+
+.logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+.details .community-name {
+    font-family: 'Crimson Pro', serif;
+    font-size: 2.2rem;
+    font-weight: normal;
+    margin-bottom: 5px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.details .slogan {
+    font-size: 1.2rem;
+    font-style: italic;
+    text-align: center;
+    color: #ffffff;
+}
+
+.details .community-name {
+    font-weight: bold;
+}
+
+/* Right Content Section */
+.content {
+    margin-left: 350px; /* Push the content to the right of the sidebar */
+    padding: 40px 30px;
+    flex-grow: 1;
+    background-color: #ffffff;
+    overflow-y: auto; /* Make this section scrollable */
+}
+
+.register-form {
+    width: 100%;
+    max-width: 700px;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.register-form h2 {
+    margin-bottom: 30px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #6a1b9a; /* Purple color */
+    text-align: center;
+}
+
+.form-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+    width: 30%;
+}
+
+.form-group input, .form-group select {
+    width: 65%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Button */
+.register-form button {
+    width: 100%;
+    padding: 14px;
+    background-color: #6a1b9a; /* Purple color */
+    color: white;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.register-form button:hover {
+    background-color: #4b1480; /* Darker purple */
+}
+
+/* Back to login link */
+.back-to-login {
+    text-align: center;
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+.back-to-login a {
+    color: #6a1b9a; /* Purple color */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-to-login a:hover {
+    text-decoration: underline;
+}

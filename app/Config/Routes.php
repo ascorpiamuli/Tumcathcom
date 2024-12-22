@@ -20,6 +20,7 @@ $routes->group('auth', function($routes) {
     $routes->get('forgot_password', 'Auth::forgotPassword');
     $routes->post('forgot_password', 'Auth::forgotPassword');
     $routes->get('logout', 'Auth::logout');
+    
 });
 
 // Dashboard Routes
@@ -37,9 +38,12 @@ $routes->group('tabs', function($routes) {
     $routes->get('treasury_report', 'Dashboard::treasury_report');
 
     // Liturgy routes
-    $routes->get('daily_prayers', 'Dashboard::daily_prayers');
+    
+    $routes->get('daily_prayers/(:num)', 'Dashboard::daily_prayers/$1');//DYNAMIC
+
     $routes->get('choir', 'Dashboard::choir');
-   // $routes->get('readings', 'Dashboard::readings');
+    $routes->get('readings', 'Dashboard::readings');
+
 
     // Events and Settings
     $routes->get('events', 'Dashboard::events');
@@ -56,3 +60,5 @@ $routes->group('tabs', function($routes) {
 $routes->get('saints', 'Scraper::fetchAndSaveSaints');
 $routes->get('readings','Scraper::fetchReadings');
 $routes->get('prayers','Scraper::fetchPrayers');
+$routes->get('/getJumuia', 'JumuiaController::getJumuia');
+
