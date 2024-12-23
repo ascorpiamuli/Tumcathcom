@@ -9,9 +9,7 @@ use CodeIgniter\Controller;
 
 class Auth extends Controller
 {
- 
-
-    // Authentication and Registration Flow
+     // Authentication and Registration Flow
     public function index()
     {
         // Check if user is already logged in

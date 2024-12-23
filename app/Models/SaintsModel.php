@@ -31,6 +31,15 @@ class SaintsModel extends Model
     
         return null; // Return null if no match is found
     }
-    
+    public function getSaintData($family){
+        // Fetch the first matching record based on the saint name (title)
+        $saint = $this->where('title', $family)->first();
+
+        if ($saint) {
+            return $saint; // Return the full saint data as an array
+        }
+
+        return null; // Return null if no saint is found
+        }
 
 }

@@ -9,8 +9,18 @@
         </div>
 
         <!-- Readings Section -->
-        <div class="readings-container">
-            <h3>Today's Readings</h3>
+     <div class="readings-container">
+            <h3 id="readings-heading">
+                <?php 
+                    $today = date('Y-m-d');
+                    if (!empty($_GET['date']) && $_GET['date'] === $today) {
+                        echo "Today's Readings";
+                    } else {
+                        $selectedDate = !empty($_GET['date']) ? date('l, F j, Y', strtotime($_GET['date'])) : date('l, F j, Y');
+                        echo $selectedDate . "";
+                    }
+                ?>
+            </h3>
             <div class="readings-list" id="readings-list">
                 <!-- Dynamic readings will be displayed here -->
                 <?php if (!empty($readings['content'])): ?>
@@ -23,7 +33,10 @@
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <p>No readings available for today.</p>
+                    <div class="error-message">
+                      <p>No readings available for <?= esc($selected_date) ?>.</p>
+                    </div>
+
                 <?php endif; ?>
             </div>
         </div>
@@ -51,6 +64,24 @@
             margin: 20px auto;
             flex-wrap: wrap;
         }
+        .error-message {
+            background-color: #f8d7da; /* Light red background */
+            color: #721c24; /* Dark red text */
+            border: 1px solid #f5c6cb; /* Red border */
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 10px;
+            margin: 20px 0; /* Add spacing around the message */
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-message p {
+            margin: 0; /* Remove default paragraph margin */
+            font-weight: bold;
+        }
+
+
 
         .calendar-container {
             flex: 1;
@@ -117,116 +148,36 @@
 
 <!-- Inject page-specific scripts into the scripts section -->
 <?= $this->section('scripts') ?>
-    <script>
-        // Ensure jQuery and FullCalendar are loaded before initializing
-        $(document).ready(function() {
-            $('#calendar').fullCalendar({
-                header: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'month,agendaWeek,agendaDay'
-                },
-                events: function(start, end, timezone, callback) {
-                    var events = [
-                        {
-                            title: 'Reading for January 1',
-                            start: '2024-01-01',
-                            description: 'Readings for New Year'
-                        },
-                        {
-                            title: 'Reading for January 6',
-                            start: '2024-01-06',
-                            description: 'Readings for Epiphany'
-                        }
-                    ];
-                    callback(events);
-                },
-                dayClick: function(date, jsEvent, view) {
-                    var selectedDate = date.format();
-                    fetchReadings(selectedDate);
-                }
-            });
-        });
-
-        // Fetch readings for the selected date
-        function fetchReadings(date) {
-            var readingsData = {
-                '2024-01-01': [
+<script>
+    $(document).ready(function () {
+        // Initialize FullCalendar
+        $('#calendar').fullCalendar({
+            header: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'month,agendaWeek,agendaDay',
+            },
+            events: function (start, end, timezone, callback) {
+                var events = [
                     {
-                        topic: 'New Year Reading',
-                        paragraphs: ['This is a reading for the New Year...']
-                    }
-                ],
-                '2024-01-06': [
+                        title: 'Reading for January 1',
+                        start: '2024-01-01',
+                        description: 'Readings for New Year',
+                    },
                     {
-                        topic: 'Epiphany Reading',
-                        paragraphs: ['This is a reading for the Epiphany...']
-                    }
-                ]
-            };
-
-            var readingsContainer = document.getElementById('readings-list');
-            readingsContainer.innerHTML = ''; // Clear previous readings
-
-            if (readingsData[date]) {
-                readingsData[date].forEach(function(reading) {
-                    var readingCard = document.createElement('div');
-                    readingCard.classList.add('reading-card');
-
-                    var topic = document.createElement('h4');
-                    topic.textContent = reading.topic;
-                    readingCard.appendChild(topic);
-
-                    reading.paragraphs.forEach(function(paragraph) {
-                        var para = document.createElement('p');
-                        para.textContent = paragraph;
-                        readingCard.appendChild(para);
-                    });
-
-                    readingsContainer.appendChild(readingCard);
-                });
-            } else {
-                readingsContainer.innerHTML = '<p>No readings available for this date.</p>';
-            }
-        }
-        $(document).ready(function() {
-            // Initialize FullCalendar
-            $('#calendar').fullCalendar({
-                // Add the dateClick event to capture the clicked date
-                dateClick: function(info) {
-                    // Get the clicked date in 'Y-m-d' format
-                    var selectedDate = moment(info.date).format('YYYY-MM-DD');
-                    
-                    // Log the selected date (for debugging purposes)
-                    console.log("Selected Date: " + selectedDate);
-                    
-                    // Update the URL with the selected date
-                    var newUrl = window.location.href.split('?')[0] + "?date=" + selectedDate;
-                    
-                    // Update the browser's address bar without reloading the page
-                    window.history.pushState({ path: newUrl }, '', newUrl);
-                    
-                    // Optionally, you can also reload or fetch the day's readings using AJAX
-                    fetchDayReadings(selectedDate);
-                }
-            });
+                        title: 'Reading for January 6',
+                        start: '2024-01-06',
+                        description: 'Readings for Epiphany',
+                    },
+                ];
+                callback(events);
+            },
+            dayClick: function (date, jsEvent, view) {
+                var selectedDate = date.format(); // Format the date
+                // Update the URL and navigate
+                window.location.href = 'http://localhost/tumCathCom/public/index.php/tabs/readings?date=' + selectedDate;
+            },
         });
-        function fetchDayReadings(date) {
-            // Make an AJAX request to fetch readings for the selected date
-            $.ajax({
-                url: 'http://localhost/tumCathCom/public/index.php/tabs/readings/',  // Adjust URL to your actual endpoint
-                method: 'GET',
-                data: { date: date },
-                success: function(response) {
-                    // Handle the response (e.g., display the readings in the page)
-                    console.log('Readings for ' + date + ':', response);
-                    // Optionally, you can update the page with the new readings here
-                },
-                error: function(error) {
-                    console.log('Error fetching readings:', error);
-                }
-            });
-        }
-
-    </script>
+    });
+</script>
 <?= $this->endSection() ?>

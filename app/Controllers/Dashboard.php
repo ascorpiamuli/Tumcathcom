@@ -61,10 +61,20 @@ class Dashboard extends BaseController
     {
         // Get common data
         $data = $this->getCommonData();
-
-        // Pass common data directly to the family_jumuia view
+        
+        // Extract the family name (saint name) from the common data
+        $family = $data['family']; // Assuming 'family' is part of the common data
+    
+        // Fetch the saint's data based on the family (saint name)
+        $saintData = $this->saintsModel->getSaintData($family);
+    
+        // Add the saint's data to the view data
+        $data['saintData'] = $saintData;
+    
+        // Pass common data and saint data to the family_jumuia view
         return view('tabs/family_jumuia', $data);
     }
+    
 
     public function semester_registration()
     {
@@ -136,10 +146,45 @@ class Dashboard extends BaseController
 
     public function readings()
     {
+        // Log the start of the method
+        log_message('debug', 'Entered readings method.');
+    
+        // Get common data
         $data = $this->getCommonData();
+        log_message('debug', 'Fetched common data.');
+    
+        // Fetch the date from the GET request
+        $date = $this->request->getGet('date'); // Assuming the date is passed as 'date' in the GET request
+        log_message('debug', 'Received GET date: ' . ($date ? $date : 'No date provided'));
+    
+        // Validate the date
+        if (!$date) {
+            log_message('debug', 'No date provided, defaulting to today\'s date: ' . date('Y-m-d'));
+            $date = date('Y-m-d'); // Default to today's date
+        }
+    
+        // Fetch readings for the given date
+        log_message('debug', 'Fetching readings for date: ' . $date);
+        $serviceRequest = new \App\Libraries\getServiceRequest(\Config\Services::cache());
+        $readings = $serviceRequest->fetchReadings($date);
+    
+        // Log the number of readings fetched
+        if ($readings) {
+            log_message('debug', 'Fetched ' . count($readings) . ' readings for the date: ' . $date);
+         
+        } else { 
+        }
+    
+        // Add readings and the date to the data array
+        $data['readings'] = $readings;
+        $data['selected_date'] = $date;
+    
+        // Log the data being passed to the view
+        log_message('debug', 'Passing data to view: ' . json_encode(['readings' => count($readings), 'selected_date' => $date]));
+        // Pass the data to the view
         return view('tabs/readings', $data);
     }
-
+    
     public function events()
     {
         $data = $this->getCommonData();
