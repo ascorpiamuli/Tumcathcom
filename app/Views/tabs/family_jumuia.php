@@ -28,9 +28,7 @@
                                     $youtubeLink = preg_match('/https:\/\/www\.youtube\.com\/watch\?v=[^&]+/', $youtubeLink, $matches) ? $matches[0] : '';
                                 ?>
                                 <?php if ($youtubeLink): ?>
-                                    <a href="<?= esc($youtubeLink) ?>" target="_blank" class="youtube-thumbnail">
-                                        <img id="youtube-thumbnail" src="https://img.youtube.com/vi/<?= basename($youtubeLink) ?>/hqdefault.jpg" alt="YouTube Video Thumbnail">
-                                    </a>
+                                    <p><strong>Youtube:</strong><a href="<?= esc($youtubeLink) ?>" target="_blank" class="youtube-thumbnail"><?= esc($youtubeLink) ?></a></p>
                                 <?php else: ?>
                                     <p>No Video Link available</p>
                                 <?php endif; ?>
@@ -95,7 +93,7 @@
     }
 
     .saint-info h2 {
-        color: #6a4dff; /* Purple */
+        color:  #5e35b1; /* Purple */
         font-size: 28px;
         text-align: center;
         margin-bottom: 20px;
@@ -109,8 +107,8 @@
     }
 
     .saint-info-box h3 {
-        color: #6a4dff; /* Purple */
-        font-size: 24px;
+        color: #5e35b1; /* Purple */
+        font-size: 17px;
         text-align: center;
         margin-bottom: 20px;
     }
@@ -129,7 +127,7 @@
     /* Saint Paragraph Box */
     .saint-paragraphs {
         flex: 1;
-        min-width: 300px;
+        min-width: 390px;
         background-color: #fff;
         padding: 20px;
         border-radius: 8px;
@@ -138,16 +136,17 @@
 
     .saint-paragraphs h3 {
         color: #6a4dff; /* Purple */
-        font-size: 24px;
+        font-size: 20px;
         margin-bottom: 20px;
     }
 
     .paragraphs-box {
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-left: 5px solid #283593; /* Accent color */
-            transition: transform 0.3s ease-in-out;
-            border-radius: 8px; 
+        padding: 15px;
+        background-color: #f8f9fa;
+        border-left: 5px solid #283593; /* Accent color */
+        transition: transform 0.3s ease-in-out;
+        border-radius: 8px;
+        animation: fadeIn 2s forwards;
     }
 
     .paragraphs-box p {
@@ -155,26 +154,6 @@
         line-height: 1.6;
         color: #555;
         margin-bottom: 10px;
-    }
-
-    /* YouTube Box */
-    .youtube-box {
-        margin-top: 20px;
-    }
-
-    .youtube-thumbnail {
-        display: block;
-        width: 100%;
-        max-width: 360px;
-        margin: 0 auto;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    }
-
-    .youtube-thumbnail img {
-        width: 100%;
-        height: auto;
-        border-radius: 8px;
     }
 
     /* No data box */

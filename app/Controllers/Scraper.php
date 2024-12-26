@@ -5,6 +5,12 @@ namespace App\Controllers;
 
 class Scraper extends BaseController
 {
+    protected $db;
+
+    public function __construct()
+    {
+        $this->db = \Config\Database::connect();
+    }
 
     public function fetchAndSaveSaints()
     {
@@ -127,6 +133,7 @@ class Scraper extends BaseController
             'youtube_links' => json_encode($youtubeLinks),
         ];
     }
+
     
     
 
@@ -334,6 +341,119 @@ class Scraper extends BaseController
         $prayerModel = new \App\Models\PrayerModel();
         $prayerModel->save($data);
     }
+    public function saveMysteriesOfTheRosary() {
+        $baseUrl = "https://www.catholic.org/prayers/mystery.php?id=";
+        $daysMapping = [
+            1 => 'Monday & Saturday',
+            2 => 'Tuesday & Friday',
+            3 => 'Wednesday & Sunday',
+            4 => 'Thursday'
+        ];
+    
+        log_message('info', 'Starting saveMysteriesOfTheRosary method');
+    
+        // Loop through each day (ID 1 to 4)
+        for ($id = 1; $id <= 4; $id++) {
+            $url = $baseUrl . $id;
+            log_message('info', "Fetching data for ID: $id, URL: $url");
+    
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            $htmlContent = curl_exec($ch);
+    
+            if (curl_errno($ch)) {
+                log_message('error', 'cURL Error for ID: ' . $id . ', Error: ' . curl_error($ch));
+                curl_close($ch);
+                continue;
+            }
+            curl_close($ch);
+            log_message('info', "Successfully fetched HTML content for ID: $id");
+    
+            libxml_use_internal_errors(true);
+            $dom = new \DOMDocument();
+            $dom->loadHTML($htmlContent);
+            libxml_clear_errors();
+    
+            $xpath = new \DOMXPath($dom);
+    
+            // Main Title (this is the general title for the day, like "Joyful Mysteries")
+            $titleNode = $xpath->query("//div[@id='content']//h1");
+            $mainTitle = $titleNode->length > 0 ? trim($titleNode->item(0)->nodeValue) : null;
+    
+            if (!$mainTitle) {
+                log_message('error', "Failed to fetch main title for ID: $id");
+                continue;
+            }
+            log_message('info', "Fetched main title: $mainTitle for ID: $id");
+    
+            // Get the mysteries (h3 and h4 elements)
+            $mysteryTitles = $xpath->query("//div[@id='prayersMysteryRosary']//div[@id='contentMystery']//h3");
+            $mysteryNumbers = $xpath->query("//div[@id='prayersMysteryRosary']//div[@id='contentMystery']//h4");
+            $paragraphs = $xpath->query("//div[@id='prayersMysteryRosary']//div[@id='contentMystery']//p");
+    
+            $currentIndex = 0;
+            for ($index = 0; $index < 5; $index++) { // Process the first 5 mysteries
+                if ($index >= $mysteryTitles->length || $index >= $mysteryNumbers->length) {
+                    break;
+                }
+    
+                // Get mystery title and number
+                $mysteryTitle = trim($mysteryTitles->item($index)->nodeValue);
+                $mysteryNumber = trim($mysteryNumbers->item($index)->nodeValue);
+    
+                if (!$mysteryTitle || !$mysteryNumber) {
+                    log_message('error', "Missing title or number for ID: $id, Mystery Index: $index");
+                    continue;
+                }
+    
+                // Get content (p element for the current mystery)
+                $mysteryContent = '';
+                $paragraph = $paragraphs->item($index);
+                if ($paragraph) {
+                    $mysteryContent = trim($paragraph->nodeValue);
+                }
+    
+                if (!$mysteryContent) {
+                    log_message('error', "No content for Mystery: $mysteryTitle, Number: $mysteryNumber");
+                    continue;
+                }
+    
+                log_message('info', "Fetched Mystery Title: $mysteryTitle, Number: $mysteryNumber, Content length: " . strlen($mysteryContent) . " for ID: $id");
+    
+                // Save the mystery to the database
+                $data = [
+                    'day'             => $daysMapping[$id],
+                    'title'           => $mainTitle,
+                    'mystery_title'   => $mysteryTitle,
+                    'mystery_number'  => $mysteryNumber,
+                    'mystery_content' => $mysteryContent,
+                    'created_at'      => date('Y-m-d H:i:s'),
+                    'updated_at'      => date('Y-m-d H:i:s'),
+                ];
+    
+                try {
+                    $builder = $this->db->table('mysteries_of_the_rosary');
+                    $builder->insert($data);
+    
+                    log_message('info', "Data for ID: $id, Mystery Index: $index inserted successfully.");
+                } catch (\Exception $e) {
+                    log_message('critical', "Error inserting data for ID: $id, Mystery Index: $index - " . $e->getMessage());
+                }
+            }
+        }
+    
+        log_message('info', "Finished saving mysteries of the Rosary.");
+    }
+    
+    
+    
+    
+    
+
+    
     
     
     

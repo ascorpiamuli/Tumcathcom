@@ -61,4 +61,6 @@ $routes->get('saints', 'Scraper::fetchAndSaveSaints');
 $routes->get('readings','Scraper::fetchReadings');
 $routes->get('prayers','Scraper::fetchPrayers');
 $routes->get('/getJumuia', 'JumuiaController::getJumuia');
+$routes->get('/daily_prayers','Scraper::getDailyPrayers');
+$routes->get('/saveMysteries', 'Scraper::saveMysteriesOfTheRosary');
 

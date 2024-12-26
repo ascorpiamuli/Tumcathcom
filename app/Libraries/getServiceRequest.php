@@ -137,4 +137,163 @@ class getServiceRequest
         // Return the scraped data
         return $scrapedData;
     }
+    public function getDailyPrayers() {
+        log_message('info', 'Starting getDailyPrayers method');
+        // Use the provided date or default to the current date
+        $date = $date ?? date('Y-m-d');
+        log_message('info', 'Fetching Prayers for date: ' . $date);
+    
+        // Define the cache key for daily readings
+        $cacheKey = 'daily_prayers_' . $date;
+    
+        // Attempt to retrieve cached data
+        $cachedData = $this->cache->get($cacheKey);
+        if ($cachedData) {
+            log_message('info', 'Cache hit for date: ' . $date);
+            return $cachedData; // Return cached data if available
+        }
+        log_message('info', 'Cache miss for date: ' . $date);
+    
+        $url = "https://www.catholic.org/prayers/prayeroftheday/";
+        log_message('info', 'Target URL: ' . $url);
+    
+        // Initialize cURL session
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    
+        // Execute cURL request
+        $htmlContent = curl_exec($ch);
+    
+        if (curl_errno($ch)) {
+            log_message('error', 'cURL Error: ' . curl_error($ch));
+            curl_close($ch);
+            return [
+                'status' => 'error',
+                'message' => curl_error($ch),
+            ];
+        }
+    
+        curl_close($ch);
+    
+        log_message('info', 'Fetched HTML content length: ' . strlen($htmlContent));
+        file_put_contents('debug_fetched.html', $htmlContent);
+        log_message('info', 'HTML content saved to debug_fetched.html');
+    
+        // Load the HTML content into DOMDocument
+        libxml_use_internal_errors(true);
+        $dom = new \DOMDocument();
+        $dom->loadHTML($htmlContent);
+        libxml_clear_errors();
+        log_message('info', 'DOMDocument initialized successfully');
+    
+        // Use DOMXPath to extract the desired content
+        $xpath = new \DOMXPath($dom);
+        log_message('info', 'DOMXPath initialized successfully');
+    
+        // Query for <h3> and <p> tags inside the target div
+        $tags = $xpath->query("//div[@id='prayersPofd']//h3 | //div[@id='prayersPofd']//p");
+    
+        log_message('info', 'Number of <h3> and <p> tags found: ' . $tags->length);
+    
+        // Prepare the output array
+        $output = [];
+        foreach ($tags as $tag) {
+            $output[] = [
+                'type' => $tag->nodeName,  // 'h3' or 'p'
+                'content' => trim($tag->nodeValue)
+            ];
+        }
+    
+        // Cache the output for future requests
+        $this->cache->save($cacheKey, $output, 86400); // Cache for 24 hours
+        log_message('info', 'Daily prayers cached successfully.');
+    
+        // Return the data to be used in the view
+        return [
+            'status' => 'success',
+            'data' => $output
+        ];
+    }
+    public function getSaintOfTheDay(){
+        log_message('info', 'Starting getSaintOfTheDay method');
+        // Use the provided date or default to the current date
+        $date = $date ?? date('Y-m-d');
+        log_message('info', 'Fetching Saint for date: ' . $date);
+    
+        // Define the cache key for daily readings
+        $cacheKey = 'daily_saint_' . $date;
+    
+        // Attempt to retrieve cached data
+        $cachedData = $this->cache->get($cacheKey);
+        if ($cachedData) {
+            log_message('info', 'Cache hit for date: ' . $date);
+            return $cachedData; // Return cached data if available
+        }
+        log_message('info', 'Cache miss for date: ' . $date);
+    
+        $url = "https://www.catholic.org/saints/sofd.php";
+        log_message('info', 'Target URL: ' . $url);
+    
+        // Initialize cURL session
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    
+        // Execute cURL request
+        $htmlContent = curl_exec($ch);
+    
+        if (curl_errno($ch)) {
+            log_message('error', 'cURL Error: ' . curl_error($ch));
+            curl_close($ch);
+            return [
+                'status' => 'error',
+                'message' => curl_error($ch),
+            ];
+        }
+    
+        curl_close($ch);
+    
+        log_message('info', 'Fetched HTML content length: ' . strlen($htmlContent));
+        file_put_contents('debug_fetched.html', $htmlContent);
+        log_message('info', 'HTML content saved to debug_fetched.html');
+    
+        // Load the HTML content into DOMDocument
+        libxml_use_internal_errors(true);
+        $dom = new \DOMDocument();
+        $dom->loadHTML($htmlContent);
+        libxml_clear_errors();
+        log_message('info', 'DOMDocument initialized successfully');
+    
+        // Use DOMXPath to extract the desired content
+        $xpath = new \DOMXPath($dom);
+        log_message('info', 'DOMXPath initialized successfully');
+    
+        // Query for <h3> and <p> tags inside the target div
+        $tags = $xpath->query("//div[@id='prayersPofd']//h3");
+    
+        log_message('info', 'Number of <h3> tags found: ' . $tags->length);
+    
+        // Prepare the output array
+        $output = [];
+        foreach ($tags as $tag) {
+            $output[] = [
+                'type' => $tag->nodeName,  // 'h3' or 'p'
+                'content' => trim($tag->nodeValue)
+            ];
+        }
+    
+        // Cache the output for future requests
+        $this->cache->save($cacheKey, $output, 86400); // Cache for 24 hours
+        log_message('info', 'Daily saint cached successfully.');
+    
+        // Return the data to be used in the view
+        return [
+            'status' => 'success',
+            'data' => $output
+        ];
+    }
 }
+

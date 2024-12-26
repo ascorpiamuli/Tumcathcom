@@ -21,8 +21,7 @@ class Dashboard extends BaseController
     }
 
     // Method to fetch common data
-    private function getCommonData()
-    {
+    private function getCommonData()    {
         $session = session();
         $user_id = $session->get('user_id');
 
