@@ -35,10 +35,14 @@ class Dashboard extends BaseController
         $saint = $this->saintsModel->getSaintDatabySaintName($family);
         $serviceRequest = new \App\Libraries\getServiceRequest(\Config\Services::cache());
         $readings = $serviceRequest->fetchReadings();
+        $saintoftheday=$serviceRequest->getSaintOfTheDay();
         $prayer = $this->prayerModel->getRandomPrayer();
+        $saintofthedaydata=$this->saintsModel->getSaintDatabySaintName($saintoftheday);
 
         // Returning all the common data as an array
         return [
+            'saintofthedaydata'=>$saintofthedaydata,
+            'saintoftheday'=>$saintoftheday,
             'fullName' => $fullName,
             'family' => $family,
             'saint' => $saint,
@@ -51,7 +55,6 @@ class Dashboard extends BaseController
     {
         // Get common data
         $data = $this->getCommonData();
-
         // Pass common data directly to the dashboard view
         return view('tabs/dashboard', $data);
     }

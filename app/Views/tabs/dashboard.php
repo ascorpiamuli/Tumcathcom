@@ -35,7 +35,7 @@
 
             <div class="col-12 col-md-4">
                 <!-- Prayers -->
-                <div class="box-container">
+                <div class="box-container" >
                     <a href="<?= site_url('tabs/daily_prayers/' . $prayer['id']) ?>" class="box prayers">
                         <i class="fas fa-praying-hands fa-3x"></i> <!-- Prayers Icon -->
                         <h3><?= $prayer['title'] ?></h3>
@@ -71,12 +71,15 @@
             <div class="col-12 col-md-4">
                 <!-- Did You Know Section -->
                 <div class="box-container">
-                    <a href="<?= site_url('tabs/readings') ?>" class="box did-you-know">
+                    <a href="<?= site_url('tabs/family') ?>" class="box did-you-know">
                         <i class="fas fa-lightbulb fa-3x"></i> <!-- Lightbulb Icon -->
-                        <h3>Did you Know??</h3>
-                        <p>Did you know that the Rosary was first introduced by Saint Dominic?</p>
+                        <h3>Saint of The Day</h3>
+                        <h3><strong><?= $saintoftheday ?></strong></h3>
+                        <p><?= esc(substr($saintofthedaydata, 0, 100)) ?></p>
+
                     </a>
                 </div>
+
             </div>
 
             

@@ -216,13 +216,15 @@ class getServiceRequest
             'data' => $output
         ];
     }
-    public function getSaintOfTheDay(){
+    public function getSaintOfTheDay($date = null)
+    {
         log_message('info', 'Starting getSaintOfTheDay method');
+    
         // Use the provided date or default to the current date
         $date = $date ?? date('Y-m-d');
-        log_message('info', 'Fetching Saint for date: ' . $date);
+        log_message('info', 'Fetching Saint of the Day for date: ' . $date);
     
-        // Define the cache key for daily readings
+        // Define the cache key for daily saint
         $cacheKey = 'daily_saint_' . $date;
     
         // Attempt to retrieve cached data
@@ -246,54 +248,52 @@ class getServiceRequest
         $htmlContent = curl_exec($ch);
     
         if (curl_errno($ch)) {
-            log_message('error', 'cURL Error: ' . curl_error($ch));
+            $error = curl_error($ch);
+            log_message('error', 'cURL Error: ' . $error);
             curl_close($ch);
             return [
                 'status' => 'error',
-                'message' => curl_error($ch),
+                'message' => $error,
             ];
         }
     
         curl_close($ch);
     
-        log_message('info', 'Fetched HTML content length: ' . strlen($htmlContent));
-        file_put_contents('debug_fetched.html', $htmlContent);
-        log_message('info', 'HTML content saved to debug_fetched.html');
+        log_message('info', 'Fetched HTML content of length: ' . strlen($htmlContent));
     
         // Load the HTML content into DOMDocument
         libxml_use_internal_errors(true);
         $dom = new \DOMDocument();
         $dom->loadHTML($htmlContent);
         libxml_clear_errors();
-        log_message('info', 'DOMDocument initialized successfully');
+        log_message('info', 'DOMDocument initialized and HTML loaded successfully');
     
-        // Use DOMXPath to extract the desired content
+        // Use DOMXPath to extract the saint name
         $xpath = new \DOMXPath($dom);
         log_message('info', 'DOMXPath initialized successfully');
     
-        // Query for <h3> and <p> tags inside the target div
-        $tags = $xpath->query("//div[@id='prayersPofd']//h3");
+        // Query for the saint name (adjust the XPath based on the actual structure of the HTML)
+        $saintNode = $xpath->query("//div[@id='saintsSofd']//h3")->item(0);
+        if ($saintNode) {
+            $saintName = trim($saintNode->nodeValue);
+            log_message('info', 'Saint name extracted: ' . $saintName);
     
-        log_message('info', 'Number of <h3> tags found: ' . $tags->length);
+            // Cache the saint name for future requests
+            $this->cache->save($cacheKey, $saintName, 86400); // Cache for 24 hours
+            log_message('info', 'Saint name cached successfully for date: ' . $date);
     
-        // Prepare the output array
-        $output = [];
-        foreach ($tags as $tag) {
-            $output[] = [
-                'type' => $tag->nodeName,  // 'h3' or 'p'
-                'content' => trim($tag->nodeValue)
+            return [
+                'status' => 'success',
+                'saint' => $saintName,
+            ];
+        } else {
+            log_message('warning', 'No saint name found in the fetched content.');
+            return [
+                'status' => 'error',
+                'message' => 'No saint name found.',
             ];
         }
-    
-        // Cache the output for future requests
-        $this->cache->save($cacheKey, $output, 86400); // Cache for 24 hours
-        log_message('info', 'Daily saint cached successfully.');
-    
-        // Return the data to be used in the view
-        return [
-            'status' => 'success',
-            'data' => $output
-        ];
     }
+    
 }
 
