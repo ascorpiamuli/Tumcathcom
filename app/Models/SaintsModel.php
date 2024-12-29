@@ -40,6 +40,6 @@ class SaintsModel extends Model
         }
 
         return null; // Return null if no saint is found
-        }
+    }
 
 }

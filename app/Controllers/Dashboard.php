@@ -32,7 +32,7 @@ class Dashboard extends BaseController
 
         $fullName = $this->userProfileModel->getUserFullNameById($user_id);
         $family = $this->userProfileModel->getFamilyNamebyId($user_id);
-        $saint = $this->saintsModel->getSaintDatabySaintName($family);
+        $saint = $this->saintsModel->getSaintData($family);
         $serviceRequest = new \App\Libraries\getServiceRequest(\Config\Services::cache());
         $readings = $serviceRequest->fetchReadings();
         $saintoftheday=$serviceRequest->getSaintOfTheDay();

@@ -75,8 +75,8 @@
                 <i class="bi bi-list"></i>
               </a>
             </li>
-            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Home</a></li>
-            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Contact</a></li>
+            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Help</a></li>
+            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Daily Readings</a></li>
           </ul>
           <!--end::Start Navbar Links-->
           <!--begin::End Navbar Links-->
@@ -221,7 +221,7 @@
                   class="user-image rounded-circle shadow"
                   alt="User Image"
                 />
-                <span class="d-none d-md-inline">Alexander Pierce</span>
+                <span class="d-none d-md-inline"><?= $fullName?></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                 <!--begin::User Image-->
@@ -232,7 +232,7 @@
                     alt="User Image"
                   />
                   <p>
-                    Alexander Pierce - Web Developer
+                    <?=$fullName?>-<?=$family?>
                     <small>Member since Nov. 2023</small>
                   </p>
                 </li>
@@ -241,9 +241,9 @@
                 <li class="user-body">
                   <!--begin::Row-->
                   <div class="row">
-                    <div class="col-4 text-center"><a href="#">Followers</a></div>
-                    <div class="col-4 text-center"><a href="#">Sales</a></div>
-                    <div class="col-4 text-center"><a href="#">Friends</a></div>
+                    <div class="col-4 text-center"><a href="#">Contact us</a></div>
+                    <div class="col-4 text-center"><a href="#">Developer info</a></div>
+                    <div class="col-4 text-center"><a href="#">Prayer Patner</a></div>
                   </div>
                   <!--end::Row-->
                 </li>
@@ -251,7 +251,7 @@
                 <!--begin::Menu Footer-->
                 <li class="user-footer">
                   <a href="#" class="btn btn-default btn-flat">Profile</a>
-                  <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                  <a href="<?=site_url('auth/logout');?>" class="btn btn-default btn-flat float-end">Sign out</a>
                 </li>
                 <!--end::Menu Footer-->
               </ul>
@@ -271,13 +271,13 @@
           <a href="./index.html" class="brand-link">
             <!--begin::Brand Image-->
             <img
-              src="../../dist/assets/img/AdminLTELogo.png"
-              alt="AdminLTE Logo"
-              class="brand-image opacity-75 shadow"
+              src="../../dist/assets/img/cathcomlogo.jpg"
+              alt="CathcomLogo"
+              class="brand-image opacity-23 shadow"
             />
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
-            <span class="brand-text fw-light">AdminLTE 4</span>
+            <span class="brand-text fw-light">TUMCATHCOM</span>
             <!--end::Brand Text-->
           </a>
           <!--end::Brand Link-->
@@ -293,11 +293,17 @@
               role="menu"
               data-accordion="false"
             >
+              <li class="nav-item">
+                    <a href="./generate/theme.html" class="nav-link">
+                    <i class="nav-icon bi bi-speedometer"></i>
+                    <p>Dashboard</p>
+                    </a>
+              </li>
               <li class="nav-item menu-open">
                 <a href="#" class="nav-link active">
-                  <i class="nav-icon bi bi-speedometer"></i>
+                  <i class="nav-icon bi-person-lines-fill"></i>
                   <p>
-                    Dashboard
+                    Family
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
@@ -305,34 +311,35 @@
                   <li class="nav-item">
                     <a href="./index.html" class="nav-link active">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Dashboard v1</p>
+                      <p>Saints</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="./index2.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Dashboard v2</p>
+                      <p>Semester Registration</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="./index3.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Dashboard v3</p>
+                      <p>Prayers and Novena</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a href="./index3.html" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Family Announcements</p>
                     </a>
                   </li>
                 </ul>
               </li>
-              <li class="nav-item">
-                <a href="./generate/theme.html" class="nav-link">
-                  <i class="nav-icon bi bi-palette"></i>
-                  <p>Theme Generate</p>
-                </a>
-              </li>
+
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-box-seam-fill"></i>
+                  <i class="nav-icon bi bi-journal-text"></i>
                   <p>
-                    Widgets
+                    Liturgy
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
@@ -340,29 +347,29 @@
                   <li class="nav-item">
                     <a href="./widgets/small-box.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Small Box</p>
+                      <p>Readings</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="./widgets/info-box.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>info Box</p>
+                      <p>Daily Prayers</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="./widgets/cards.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Cards</p>
+                      <p>Catechism Registration</p>
                     </a>
                   </li>
                 </ul>
               </li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-clipboard-fill"></i>
+                  <i class="nav-icon bi bi-briefcase"></i>
                   <p>
-                    Layout Options
-                    <span class="nav-badge badge text-bg-secondary me-3">6</span>
+                    Assets & Hospitality
+                    <span class="nav-badge badge text-bg-secondary me-3"></span>
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
@@ -370,52 +377,28 @@
                   <li class="nav-item">
                     <a href="./layout/unfixed-sidebar.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Default Sidebar</p>
+                      <p>Book Asset</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="./layout/fixed-sidebar.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Fixed Sidebar</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./layout/layout-custom-area.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Layout <small>+ Custom Area </small></p>
+                      <p>Booking History</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="./layout/sidebar-mini.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Sidebar Mini</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./layout/collapsed-sidebar.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Sidebar Mini <small>+ Collapsed</small></p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./layout/logo-switch.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Sidebar Mini <small>+ Logo Switch</small></p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./layout/layout-rtl.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Layout RTL</p>
+                      <p>Assets Report</p>
                     </a>
                   </li>
                 </ul>
               </li>
               <li class="nav-item">
                 <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-tree-fill"></i>
+                  <i class="nav-icon bi bi-music-note"></i>
                   <p>
-                    UI Elements
+                    Choir 
                     <i class="nav-arrow bi bi-chevron-right"></i>
                   </p>
                 </a>
@@ -423,190 +406,39 @@
                   <li class="nav-item">
                     <a href="./UI/general.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>General</p>
+                      <p>Choir Registration</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="./UI/icons.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Icons</p>
+                      <p>Songs and Lyrics</p>
                     </a>
                   </li>
                   <li class="nav-item">
                     <a href="./UI/timeline.html" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Timeline</p>
+                      <p>Choir Store</p>
                     </a>
                   </li>
                 </ul>
               </li>
               <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-pencil-square"></i>
-                  <p>
-                    Forms
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="./forms/general.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>General Elements</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-table"></i>
-                  <p>
-                    Tables
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="./tables/simple.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Simple Tables</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-header">EXAMPLES</li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-box-arrow-in-right"></i>
-                  <p>
-                    Auth
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="nav-icon bi bi-box-arrow-in-right"></i>
-                      <p>
-                        Version 1
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      <li class="nav-item">
-                        <a href="./examples/login.html" class="nav-link">
-                          <i class="nav-icon bi bi-circle"></i>
-                          <p>Login</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a href="./examples/register.html" class="nav-link">
-                          <i class="nav-icon bi bi-circle"></i>
-                          <p>Register</p>
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="nav-icon bi bi-box-arrow-in-right"></i>
-                      <p>
-                        Version 2
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      <li class="nav-item">
-                        <a href="./examples/login-v2.html" class="nav-link">
-                          <i class="nav-icon bi bi-circle"></i>
-                          <p>Login</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a href="./examples/register-v2.html" class="nav-link">
-                          <i class="nav-icon bi bi-circle"></i>
-                          <p>Register</p>
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./examples/lockscreen.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Lockscreen</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-header">DOCUMENTATIONS</li>
-              <li class="nav-item">
-                <a href="./docs/introduction.html" class="nav-link">
-                  <i class="nav-icon bi bi-download"></i>
-                  <p>Installation</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="./docs/layout.html" class="nav-link">
-                  <i class="nav-icon bi bi-grip-horizontal"></i>
-                  <p>Layout</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="./docs/color-mode.html" class="nav-link">
-                  <i class="nav-icon bi bi-star-half"></i>
-                  <p>Color Mode</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-ui-checks-grid"></i>
-                  <p>
-                    Components
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="./docs/components/main-header.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Main Header</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./docs/components/main-sidebar.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Main Sidebar</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-filetype-js"></i>
-                  <p>
-                    Javascript
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="./docs/javascript/treeview.html" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Treeview</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a href="./docs/browser-support.html" class="nav-link">
-                  <i class="nav-icon bi bi-browser-edge"></i>
-                  <p>Browser Support</p>
+                <a href="<?=site_url('tabs/events')?>" class="nav-link">
+                  <i class="nav-icon bi bi-calendar"></i>
+                  <p>Calendar of Events</p>
                 </a>
               </li>
               <li class="nav-item">
                 <a href="./docs/how-to-contribute.html" class="nav-link">
-                  <i class="nav-icon bi bi-hand-thumbs-up-fill"></i>
-                  <p>How To Contribute</p>
+                  <i class="nav-icon bi bi-heart-fill"></i>
+                  <p>Welfare</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="./docs/faq.html" class="nav-link">
+                  <i class="nav-icon bi bi-coin"></i>
+                  <p>Treasury</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -618,91 +450,7 @@
               <li class="nav-item">
                 <a href="./docs/license.html" class="nav-link">
                   <i class="nav-icon bi bi-patch-check-fill"></i>
-                  <p>License</p>
-                </a>
-              </li>
-              <li class="nav-header">MULTI LEVEL EXAMPLE</li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle-fill"></i>
-                  <p>Level 1</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle-fill"></i>
-                  <p>
-                    Level 1
-                    <i class="nav-arrow bi bi-chevron-right"></i>
-                  </p>
-                </a>
-                <ul class="nav nav-treeview">
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Level 2</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>
-                        Level 2
-                        <i class="nav-arrow bi bi-chevron-right"></i>
-                      </p>
-                    </a>
-                    <ul class="nav nav-treeview">
-                      <li class="nav-item">
-                        <a href="#" class="nav-link">
-                          <i class="nav-icon bi bi-record-circle-fill"></i>
-                          <p>Level 3</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a href="#" class="nav-link">
-                          <i class="nav-icon bi bi-record-circle-fill"></i>
-                          <p>Level 3</p>
-                        </a>
-                      </li>
-                      <li class="nav-item">
-                        <a href="#" class="nav-link">
-                          <i class="nav-icon bi bi-record-circle-fill"></i>
-                          <p>Level 3</p>
-                        </a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li class="nav-item">
-                    <a href="#" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Level 2</p>
-                    </a>
-                  </li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle-fill"></i>
-                  <p>Level 1</p>
-                </a>
-              </li>
-              <li class="nav-header">LABELS</li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle text-danger"></i>
-                  <p class="text">Important</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle text-warning"></i>
-                  <p>Warning</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="nav-icon bi bi-circle text-info"></i>
-                  <p>Informational</p>
+                  <p>About TUMCATHCOM</p>
                 </a>
               </li>
             </ul>
@@ -885,25 +633,6 @@
     ></script>
     <!-- jsvectormap -->
     <script>
-      const visitorsData = {
-        US: 398, // USA
-        SA: 400, // Saudi Arabia
-        CA: 1000, // Canada
-        DE: 500, // Germany
-        FR: 760, // France
-        CN: 300, // China
-        AU: 700, // Australia
-        BR: 600, // Brazil
-        IN: 800, // India
-        GB: 320, // Great Britain
-        RU: 3000, // Russia
-      };
-
-      // World map by jsVectorMap
-      const map = new jsVectorMap({
-        selector: '#world-map',
-        map: 'world',
-      });
 
       // Sparkline charts
       const option_sparkline1 = {
