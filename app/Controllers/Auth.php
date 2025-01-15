@@ -5,9 +5,9 @@ namespace App\Controllers;
 use App\Models\UserProfileModel;
 use App\Models\UserAuthenticationModel;
 use App\Models\SaintsModel;
-use CodeIgniter\Controller;
+use App\Controllers\BaseController;
 
-class Auth extends Controller
+class Auth extends BaseController
 {
      // Authentication and Registration Flow
     public function index()
@@ -29,17 +29,23 @@ class Auth extends Controller
             $validationRules = [
                 'username' => 'required|is_unique[user_authentication.username]',
                 'email' => 'required|valid_email|is_unique[user_authentication.email]',
-                'phone' => 'required|regex_match[/^\+?[0-9]{10,15}$/]',
-                'password' => 'required|min_length[8]|regex_match[/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/]',
-                'confirm_password' => 'required|matches[password]', // Ensure confirm password matches
+                'phone' => 'required|regex_match[/^[0-9]{10}$/]',
+               'password' => 'required|min_length[8]',
+               'confirm_password' => 'required|matches[password]', // Ensure confirm password matches
             ];
-    
             // Customizing the error messages for password
             $validationMessages = [
                 'password' => [
-                    'regex_match' => 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (e.g., @$!%*?&).'
+                    'min_length' => 'Password must contain at least 8 characters long.'
+                ],
+
+                'phone' => [
+                    'regex_match' => 'The phone number must be 12 digits long and consist of numbers only.'
+                ],
+                'email'=>[
+                    'is_unique'=>'The Email Already Exists in the Database'
                 ]
-            ];
+            ];            
     
             // Validate the form input based on the rules
             if (!$this->validate($validationRules, $validationMessages)) {
@@ -48,9 +54,20 @@ class Auth extends Controller
                 return redirect()->back()->withInput();
             }
     
-            // Generate user ID
+            // Rate limiting: Check if user has tried too frequently
+            if (session()->has('last_attempt_time') && (time() - session()->get('last_attempt_time') < 180)) {
+                session()->setFlashdata('info', 'Please wait for 3 minutes before trying again.');
+                return redirect()->back()->withInput();
+            }
+            // Generate unique user ID
             $userId = generateUserId();
-    
+
+            // If ID generation failed after multiple retries
+            if (!$userId) {
+                session()->setFlashdata('info', 'Unable to process your request at the moment. Please try again later.');
+                return redirect()->back()->withInput();
+            }
+
             // Collect form data
             $data = [
                 'user_id' => $userId,
@@ -149,56 +166,94 @@ class Auth extends Controller
         if ($this->request->getMethod() == 'POST') {
             $username = $this->request->getPost('username');
             $password = $this->request->getPost('password');
-
+    
             $userAuthModel = new UserAuthenticationModel();
             $user = $userAuthModel->select('user_id, password')->where('username', $username)->first();
-
+    
             if ($user && password_verify($password, $user['password'])) {
+                // Log successful login
+                log_message('info', "User with username '{$username}' logged in successfully. User ID: {$user['user_id']}");
+    
+                // Check if user profile exists
                 $userProfileModel = new UserProfileModel();
                 $userProfile = $userProfileModel->where('user_id', $user['user_id'])->first();
                 if (!$userProfile) {
+                    // Log if profile data is missing
+                    log_message('warning', "Profile missing for user ID: {$user['user_id']}");
+    
                     // Redirect to registration if profile data is missing
                     session()->setFlashdata('info', 'Please Complete Your Profile to Continue');
                     return redirect()->to('/auth/register');
                 }
-
-                // Set session data
-                session()->set(['user_id' => $user['user_id']]);
-                session()->setFlashdata('success', 'Hooyah! Great Work!Logged in');
+    
+                // Generate session token
+                $sessionToken = generateSessionToken();
+                log_message('info', "Token Generated for user ID: {$user['user_id']} - Session Token: {$sessionToken}");
+    
+                // Update the session token in the database
+                $updateStatus = $userAuthModel->updateSessionToken($user['user_id'], $sessionToken);
+                if (!$updateStatus) {
+                    log_message('error', "Failed to update session token for user ID: {$user['user_id']}");
+                    session()->setFlashdata('error', 'Failed to log you in. Try again later.');
+                    return redirect()->to('/auth/login');
+                }
+    
+                // Set the session with the token
+                session()->set('user_id', $user['user_id']);
+                session()->set('session_token', $sessionToken);
+    
+                // Log the successful session creation
+                log_message('info', "Session set for user ID: {$user['user_id']} with session token: {$sessionToken}");
+    
+                // Set flash data and redirect to dashboard
+                session()->setFlashdata('success', 'Great Work! Logged in');
                 return redirect()->to('/tabs/dashboard');
             } else {
-                return redirect()->to('/auth/login')->with('error', 'Invalid Credentials.Try Again');
+                // Log failed login attempt
+                log_message('warning', "Failed login attempt for username '{$username}'");
+    
+                session()->setFlashdata('error', 'Invalid Credentials. Try Again');
+                return redirect()->to('/auth/login');
             }
         }
-
+    
+        // Return the login view if the request method is not POST
         return view('auth/login');
     }
-
-    // Dashboard
-    public function dashboard()
+    
+    
+    // Forgot
+    public function forgotPassword()
     {
-        // Check if user is logged in
-        if (!session()->has('user_id')) {
-            return redirect()->to('/auth/login');
-        }
 
         // Render dashboard view
-        return view('tabs/dashboard');
+        return view('auth/forgot_password');
     }
-    // Logout method
-// Logout method
-public function logout()
-{
-    // Set a flash message for successful logout
-    session()->setFlashdata('success', 'Noo!! Tutakumiss!! Logged Out.');
-
-    // Remove specific session data
-    session()->remove('user_id');
-
-    // Redirect first, then destroy the session in the next request
-    return redirect()->to('/auth/login');
-}
-
-
+    public function logout()
+    {
+        // Get the current user's ID and session token
+        $userId = session()->get('user_id');
+        $sessionToken = session()->get('session_token');
+    
+        // Log logout attempt
+        log_message('info', "User with ID {$userId} is logging out");
+    
+        // Set a flash message for successful logout
+        session()->setFlashdata('success', 'Successfully Logged Out.');
+    
+        // Remove the session token from the database for the current user
+        $userAuthModel = new UserAuthenticationModel();
+        $userAuthModel->update($userId, ['session_token' => null]);
+    
+        // Remove session data from the browser session
+        session()->remove('user_id');
+        session()->remove('session_token');
+    
+        // Log out event
+        log_message('info', "User with ID {$userId} logged out successfully");
+    
+        // Redirect to login page
+        return redirect()->to('/auth/login');
+    }
     
 }

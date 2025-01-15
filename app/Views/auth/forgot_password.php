@@ -192,7 +192,7 @@
                 </div>
                 <button type="submit">Send Reset Link</button>
                 <div class="back-to-login">
-                    <p>Remembered your password? <a href="login.html">Back to Login</a></p>
+                    <p>Remembered your password? <a href="<?=site_url('auth/login')?>">Back to Login</a></p>
                 </div>
             </form>
         </div>
@@ -202,7 +202,7 @@
 
 <!-- Footer -->
 <div class="footer">
-    <p>&copy; 2024 St. Francis of Assisi TUM Catholic Community. All Rights Reserved.</p>
+    <p>&copy; 2025 St. Francis of Assisi TUM Catholic Community. All Rights Reserved.</p>
 </div>
 <!-- End Footer -->
 

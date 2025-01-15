@@ -94,13 +94,13 @@
                 <div class="form-group">
                     <label for="course">Course</label>
                     <select id="course" name="course" required>
-                        <option value="" disabled selected>Select your course</option>
-                        <option value="computer_science">Computer Science</option>
-                        <option value="information_technology">Information Technology</option>
-                        <option value="electrical_engineering">Electrical Engineering</option>
-                        <option value="civil_engineering">Civil Engineering</option>
-                        <option value="architecture">Architecture</option>
-                        <!-- Add all courses TUM offers here -->
+                        <option value="" disabled selected>Select your School/Institute</option>
+                        <option value="School of Engineering and Technology">School of Engineering and Technology</option>
+                        <option value="School of Business">School of Business</option>
+                        <option value="Institute of Computing and Informatics">Institute of Computing and Informatics</option>
+                        <option value="School of Health and Health Sciences">School of Health and Health Sciences</option>
+                        <option value="School of Social Sciences">School of Social Sciences</option>
+                        <!-- Add all courses TUM schools here -->
                     </select>
                 </div>
 
@@ -108,7 +108,7 @@
             </form>
 
             <div class="back-to-login">
-                <p>Already have an account? <a href="login.html">Login</a></p>
+                <p>Already have an account? <a href="<?=site_url('auth/login')?>">Login</a></p>
             </div>
         </div>
     </div>

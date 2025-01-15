@@ -191,7 +191,7 @@
 
             <div class="form-group">
                 <label for="phone">Phone Number (+254)</label>
-                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" pattern="^(\+254\d{9})$" required>
+                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
             </div>
 
             <div class="form-group">
@@ -213,19 +213,6 @@
     </div>
 </div>
 <!-- End Right Content Section -->
-
-<script>
-    // Client-side password match validation
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
-        var password = document.getElementById('password').value;
-        var confirmPassword = document.getElementById('confirm_password').value;
-
-        if (password !== confirmPassword) {
-            e.preventDefault(); // Prevent form submission
-            alert('Passwords do not match!');
-        }
-    });
-</script>
 
 </body>
 </html>

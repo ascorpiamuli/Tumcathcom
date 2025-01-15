@@ -18,7 +18,6 @@ $routes->group('auth', function($routes) {
     $routes->get('authentication', 'Auth::authentication');
     $routes->post('authentication', 'Auth::authentication');
     $routes->get('forgot_password', 'Auth::forgotPassword');
-    $routes->post('forgot_password', 'Auth::forgotPassword');
     $routes->get('logout', 'Auth::logout');
     
 });
@@ -63,4 +62,4 @@ $routes->get('prayers','Scraper::fetchPrayers');
 $routes->get('/getJumuia', 'JumuiaController::getJumuia');
 $routes->get('/daily_prayers','Scraper::getDailyPrayers');
 $routes->get('/saveMysteries', 'Scraper::saveMysteriesOfTheRosary');
-
+$routes->get('import-calendar', 'CatholicCalendarController::importCalendar');

@@ -3,7 +3,7 @@
   <!--begin::Head-->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title><?=(isset($pageTitle)) ? $pageTitle:'Document'?>;</title>
+    <title><?= isset($pageTitle) ? $pageTitle : 'TUMCATHCOM'; ?></title>
     <!--begin::Primary Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="title" content="AdminLTE v4 | Dashboard" />
@@ -58,6 +58,7 @@
       integrity="sha256-+uGLJmmTKOqBr+2E6KDYs/NRsHxSkONXFHUL0fy2O/4="
       crossorigin="anonymous"
     />
+    <?= $this->renderSection('styles'); ?>
   </head>
   <!--end::Head-->
   <!--begin::Body-->
@@ -233,20 +234,11 @@
                   />
                   <p>
                     <?=$fullName?>-<?=$family?>
-                    <small>Member since Nov. 2023</small>
+                    <small> You Joined <?=$datelogged?></small>
                   </p>
                 </li>
                 <!--end::User Image-->
                 <!--begin::Menu Body-->
-                <li class="user-body">
-                  <!--begin::Row-->
-                  <div class="row">
-                    <div class="col-4 text-center"><a href="#">Contact us</a></div>
-                    <div class="col-4 text-center"><a href="#">Developer info</a></div>
-                    <div class="col-4 text-center"><a href="#">Prayer Patner</a></div>
-                  </div>
-                  <!--end::Row-->
-                </li>
                 <!--end::Menu Body-->
                 <!--begin::Menu Footer-->
                 <li class="user-footer">
@@ -268,7 +260,7 @@
         <!--begin::Sidebar Brand-->
         <div class="sidebar-brand">
           <!--begin::Brand Link-->
-          <a href="./index.html" class="brand-link">
+          <a href="<?=site_url('tabs/dashboard')?>" class="brand-link">
             <!--begin::Brand Image-->
             <img
               src="../../dist/assets/img/cathcomlogo.jpg"
@@ -294,7 +286,7 @@
               data-accordion="false"
             >
               <li class="nav-item">
-                    <a href="./generate/theme.html" class="nav-link">
+                    <a href="<?=site_url('tabs/dashboard')?>" class="nav-link">
                     <i class="nav-icon bi bi-speedometer"></i>
                     <p>Dashboard</p>
                     </a>
@@ -309,25 +301,25 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="./index.html" class="nav-link active">
+                    <a href="<?=site_url('tabs/saints')?>" class="nav-link active">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Saints</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./index2.html" class="nav-link">
+                    <a href="<?=site_url('tabs/semester-registration')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Semester Registration</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./index3.html" class="nav-link">
+                    <a href="<?=site_url('tabs/prayers')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Prayers and Novena</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./index3.html" class="nav-link">
+                    <a href="<?=site_url('tabs/family')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Family Announcements</p>
                     </a>
@@ -345,19 +337,19 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="./widgets/small-box.html" class="nav-link">
+                    <a href="<?=site_url('tabs/readings')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Readings</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./widgets/info-box.html" class="nav-link">
+                    <a href="<?=site_url('tabs/daily_prayers/').$prayer['id']?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Daily Prayers</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./widgets/cards.html" class="nav-link">
+                    <a href="<?=site_url('tabs/liturgical_classes')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Catechism Registration</p>
                     </a>
@@ -436,7 +428,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a href="./docs/faq.html" class="nav-link">
+                <a href="<?=site_url('tabs/treasury_report')?>" class="nav-link">
                   <i class="nav-icon bi bi-coin"></i>
                   <p>Treasury</p>
                 </a>
@@ -477,7 +469,7 @@
       <!--begin::Footer-->
       <footer class="app-footer">
         <!--begin::To the end-->
-        <div class="float-end d-none d-sm-inline">Anything you want</div>
+        <div class="float-end d-none d-sm-inline">Developed by Stephen Muli - IT Support</div>
         <!--end::To the end-->
         <!--begin::Copyright-->
         <strong>
@@ -719,6 +711,9 @@
       const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
       sparkline3.render();
     </script>
+    
+    </script>
+    <?= $this->renderSection('scripts'); ?>
     <!--end::Script-->
   </body>
   <!--end::Body-->

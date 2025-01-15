@@ -15,7 +15,6 @@ class JumuiaController extends BaseController
         // Sanitize and validate the input query
         $query = $this->request->getGet('query');
         $query = trim($query); // Remove leading/trailing spaces
-    
         // Check if query is empty and return an empty result
         if (empty($query)) {
             return $this->response->setJSON([]);

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "04e7863a627131bd774e7b7cf784ac89",
+    "content-hash": "8ba18aea44197a02c2de77f9e432d806",
     "packages": [
         {
             "name": "codeigniter4/framework",
@@ -79,6 +79,113 @@
                 "source": "https://github.com/codeigniter4/CodeIgniter4"
             },
             "time": "2024-09-07T08:49:38+00:00"
+        },
+        {
+            "name": "kigkonsult/icalcreator",
+            "version": "v2.41.91",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iCalcreator/iCalcreator.git",
+                "reference": "35da53fc31b9cf3b81dd04aaf9adfb30e511c748"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/iCalcreator/iCalcreator/zipball/35da53fc31b9cf3b81dd04aaf9adfb30e511c748",
+                "reference": "35da53fc31b9cf3b81dd04aaf9adfb30e511c748",
+                "shasum": ""
+            },
+            "require": {
+                "ext-intl": "*",
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "ext-simplexml": "*",
+                "ext-zlib": "*",
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "degraciamathieu/php-arguments-detector": ">=0.5.0",
+                "ext-xdebug": "*",
+                "phpcompatibility/php-compatibility": ">=9.3.5",
+                "phpmd/phpmd": ">=2.13.0",
+                "phpstan/phpstan": ">=0.9.3",
+                "phpunit/phpunit": ">=6.5.13",
+                "squizlabs/php_codesniffer": ">=3.5.5",
+                "vimeo/psalm": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "autoload.php"
+                ],
+                "psr-4": {
+                    "Kigkonsult\\Icalcreator\\": [
+                        "src/"
+                    ]
+                },
+                "classmap": [
+                    "src/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Kjell-Inge Gustafsson",
+                    "email": "ical@kigkonsult.se"
+                }
+            ],
+            "description": "iCalcreator is the PHP implementation of rfc2445/rfc5545 and rfc updates, management of calendar information",
+            "keywords": [
+                "alarm",
+                "availability",
+                "calendar",
+                "daylight",
+                "event",
+                "ical",
+                "json",
+                "location",
+                "management",
+                "participant",
+                "resource",
+                "rfc2445",
+                "rfc5545",
+                "rfc5870",
+                "rfc6321",
+                "rfc6868",
+                "rfc7529",
+                "rfc7808",
+                "rfc7953",
+                "rfc7986",
+                "rfc9073",
+                "rfc9074",
+                "standard",
+                "todo",
+                "vCalendar",
+                "valarm",
+                "vevent",
+                "vfreebusy",
+                "vjournal",
+                "vtimezone",
+                "vtodo",
+                "xml"
+            ],
+            "support": {
+                "issues": "https://github.com/iCalcreator/iCalcreator/issues",
+                "source": "https://github.com/iCalcreator/iCalcreator/tree/v2.41.91"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/kigkonsult",
+                    "type": "other"
+                },
+                {
+                    "url": "https://www.buymeacoffee.com/kigkonsult",
+                    "type": "other"
+                }
+            ],
+            "time": "2024-12-17T12:31:30+00:00"
         },
         {
             "name": "laminas/laminas-escaper",

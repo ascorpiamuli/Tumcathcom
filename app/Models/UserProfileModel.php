@@ -9,13 +9,32 @@ class UserProfileModel extends Model
     protected $table = 'user_profiles';
     protected $primaryKey = 'id';
     protected $allowedFields = [
-        'user_id', 'first_name', 'last_name', 'registration_number', 'dob', 
-        'year_of_study', 'family_jumuia', 'baptized', 'confirmed', 
+        'user_id', 'first_name', 'last_name', 'registration_number', 'dob',
+        'year_of_study', 'family_jumuia', 'baptized', 'confirmed',
         'course', 'created_at', 'updated_at',
     ];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
+    // Method to fetch and format full name (first_name + last_name)
+    public function getDateEnteredById($user_id)
+    {
+        // Fetch the created_at date for the given user_id
+        $date = $this->select('created_at')
+                     ->where('user_id', $user_id)
+                     ->first();
+    
+        // Check if the date exists
+        if ($date) {
+            // Format the created_at date as 'Nov 23, 2024 at 4:34 AM/PM'
+            $formattedDate = (new \DateTime($date['created_at']))->format('M d, Y \a\t h:i A');
+            
+            return $formattedDate; // Return the formatted date string
+        }
+    
+        return null; // If user not found, return null
+    }
+    
 
     // Method to fetch and format full name (first_name + last_name)
     public function getUserFullNameById($user_id)
@@ -33,27 +52,27 @@ class UserProfileModel extends Model
 
         return null; // If user not found, return null
     }
-public function getFamilyNamebyId($user_id)
-{
-    $user = $this->select('family_jumuia')
-        ->where('user_id', $user_id)
-        ->first();
+    public function getFamilyNamebyId($user_id)
+    {
+        $user = $this->select('family_jumuia')
+            ->where('user_id', $user_id)
+            ->first();
 
-    if ($user) {
-        // Replace underscores with spaces
-        $familyUnderscores = str_replace('_', ' ', $user['family_jumuia']);
-        
-        // Capitalize words
-        $family = ucwords(strtolower($familyUnderscores));
-        
-        // Add a period after "St" if it doesn't have one
-        $familyWithDot = preg_replace('/\bSt\s/', 'St. ', $family);
+        if ($user) {
+            // Replace underscores with spaces
+            $familyUnderscores = str_replace('_', ' ', $user['family_jumuia']);
 
-        return $familyWithDot; // Return the formatted family name
+            // Capitalize words
+            $family = ucwords(strtolower($familyUnderscores));
+
+            // Add a period after "St" if it doesn't have one
+            $familyWithDot = preg_replace('/\bSt\s/', 'St. ', $family);
+
+            return $familyWithDot; // Return the formatted family name
+        }
     }
-}
 
-    
+
 }
 
 
