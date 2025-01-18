@@ -37,51 +37,6 @@ class Dashboard extends BaseController
         }
         // Get common data
         $data = $this->getCommonData('Dashboard');
-        
-        // Day mapping to dayId
-        $dayMap = [
-            1 => 'Monday & Saturday', // dayId 1
-            2 => 'Tuesday & Friday',  // dayId 2
-            3 => 'Wednesday & Sunday', // dayId 3
-            4 => 'Thursday'           // dayId 4
-        ];
-        
-        // Get today's day
-        $today = date('l'); // Returns full day name, e.g., "Monday"
-        
-        // Log today's day
-        log_message('debug', 'Today\'s day: ' . $today);
-        
-        // Determine the dayId and content by matching today's day
-        $dayId = null;
-        $matchingContent = null;
-    
-        foreach ($dayMap as $id => $days) {
-            // Check if today's day exists in the combined string
-            $dayList = explode(' & ', $days); // Split combined string into individual days
-            if (in_array($today, $dayList)) {
-                $dayId = $id;
-                $matchingContent = $days; // Store the matching content
-                break;
-            }
-        }
-    
-        // Log the determined dayId and content
-        log_message('debug', 'Determined dayId: ' . ($dayId !== null ? $dayId : 'No match'));
-        log_message('debug', 'Matching content: ' . ($matchingContent !== null ? $matchingContent : 'No match'));
-        
-        // Fetch mysteries if dayId is found
-        if ($dayId !== null) {
-            $mystery = $this->rosaryModel->getMysteriesByDay($matchingContent);
-            $data['mystery'] = $mystery;
-            $data['matchingContent']=$matchingContent;
-            log_message('debug', 'Mystery data fetched: ' . print_r($mystery, true));  // Log fetched mystery data
-        } else {
-            log_message('debug', 'No myStery data found for today.');
-            $data['mystery'] = [];
-            $data['matchingContent'] = null; // Default to null if no match
-        }
-    
         // Pass data to the dashboard view
         return view('tabs/dashboard', $data);
     }
@@ -151,23 +106,18 @@ class Dashboard extends BaseController
         // Pass common data directly to the treasury_report view
         return view('tabs/treasury_report', $data);
     }
-
-    public function daily_prayers($id)
+    public function prayers()
     {
-        $data = $this->getCommonData('Daily Prayers');
-
-        // Fetch the specific prayer by ID
-        $prayer = $this->prayerModel->find($id);
-        if (!$prayer) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Prayer not found');
-        }
-
-        // Add the specific prayer data to the common data
-        $data['prayer'] = $prayer;
-
-        // Pass common data directly to the daily_prayers view
-        return view('tabs/daily_prayers', $data);
+        log_message('info', 'Prayers method started.');
+        
+        // Step 1: Fetch common data
+        log_message('info', 'Fetching common data for "Prayers".');
+        $data = $this->getCommonData('Prayers');
+        return view('tabs/prayers', $data);
     }
+    
+    
+    
 
     public function choir()
     {

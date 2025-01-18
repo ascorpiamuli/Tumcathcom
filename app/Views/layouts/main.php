@@ -76,18 +76,27 @@
                 <i class="bi bi-list"></i>
               </a>
             </li>
-            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Help</a></li>
-            <li class="nav-item d-none d-md-block"><a href="#" class="nav-link">Daily Readings</a></li>
+            <li class="nav-item d-none d-md-block"><a href="<?=site_url('tabs/help')?>" class="nav-link">Help</a></li>
+            <li class="nav-item d-none d-md-block"><a href="<?=site_url('tabs/readings')?>" class="nav-link">Daily Readings</a></li>
           </ul>
           <!--end::Start Navbar Links-->
           <!--begin::End Navbar Links-->
           <ul class="navbar-nav ms-auto">
             <!--begin::Navbar Search-->
-            <li class="nav-item">
+            <li class="nav-item d-flex align-items-center">
+              <input 
+                type="text" 
+                class="form-control form-control-sm ml-5" 
+                placeholder="Search..." 
+                aria-label="Search"
+                style="max-width: 300px; width: 230px;" 
+              />
               <a class="nav-link" data-widget="navbar-search" href="#" role="button">
                 <i class="bi bi-search"></i>
-              </a>
+              </a>  
             </li>
+
+
             <!--end::Navbar Search-->
             <!--begin::Messages Dropdown Menu-->
             <li class="nav-item dropdown">
@@ -291,8 +300,8 @@
                     <p>Dashboard</p>
                     </a>
               </li>
-              <li class="nav-item menu-open">
-                <a href="#" class="nav-link active">
+              <li class="nav-item">
+                <a href="#" class="nav-link">
                   <i class="nav-icon bi-person-lines-fill"></i>
                   <p>
                     Family
@@ -301,21 +310,9 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="<?=site_url('tabs/saints')?>" class="nav-link active">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Saints</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
                     <a href="<?=site_url('tabs/semester-registration')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Semester Registration</p>
-                    </a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="<?=site_url('tabs/prayers')?>" class="nav-link">
-                      <i class="nav-icon bi bi-circle"></i>
-                      <p>Prayers and Novena</p>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -343,9 +340,9 @@
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="<?=site_url('tabs/daily_prayers/').$prayer['id']?>" class="nav-link">
+                    <a href="<?=site_url('tabs/prayers')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Daily Prayers</p>
+                      <p>Prayers and Saints</p>
                     </a>
                   </li>
                   <li class="nav-item">
@@ -713,6 +710,28 @@
     </script>
     
     </script>
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const typingElements = document.querySelectorAll(".typingEffect"); // Select all elements with the class 'typingEffect'
+
+            typingElements.forEach((typingElement) => {
+                const text = typingElement.innerHTML; // Get the current content of each element
+                let index = 0;
+
+                function typeText() {
+                    if (index < text.length) {
+                        typingElement.innerHTML += text.charAt(index);
+                        index++;
+                        setTimeout(typeText, 100); // Adjust typing speed (15ms per character)
+                    }
+                }
+
+                typingElement.innerHTML = ""; // Clear content before starting the typing effect
+                typeText();
+            });
+        });
+
+  </script>
     <?= $this->renderSection('scripts'); ?>
     <!--end::Script-->
   </body>

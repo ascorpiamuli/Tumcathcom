@@ -12,7 +12,7 @@
           <div class="container-fluid">
             <!--begin::Row-->
             <div class="row">
-              <div class="col-sm-6"><h3 class="mb-0 typingEffect">Karibu, <?=$fullName?></h3></div>
+              <div class="col-sm-6"><h3 class="mb-0 typingEffect">Karibu, <?=$fullName?>😊</h3></div>
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-end">
                   <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -37,8 +37,8 @@
                 <!--begin::Small Box Widget 1-->
                 <div class="small-box text-bg-primary">
                   <div class="inner">
-                    <h4>Today's Saint</h4>
-                    <p>Today's Saint is <?=$saintoftheday?></p>
+                    <h4>Choir Registration</h4>
+                    <p>TBC!! Coming Soon</p>
                   </div>
                   <svg
                     class="small-box-icon"
@@ -52,7 +52,7 @@
                     ></path>
                   </svg>
                   <a
-                    href="#"
+                    href="<?=site_url('/tabs/choir')?>"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
                   >
                     More info <i class="bi bi-link-45deg"></i>
@@ -66,7 +66,7 @@
                 <div class="small-box text-bg-success">
                   <div class="inner">
                     <h4>Readings</h4>
-                    <p>Get <?= date('l, F j, Y') ?> Readings</p>
+                  <p><?= $todayscatholicdate->summary ?? 'No data available' ?></p>
                   </div>
                   <svg
                     class="small-box-icon"
@@ -80,7 +80,7 @@
                     ></path>
                   </svg>
                   <a
-                    href="#"
+                    href="<?=site_url('/tabs/readings')?>"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
                   >
                     More info <i class="bi bi-link-45deg"></i>
@@ -93,8 +93,8 @@
                 <!--begin::Small Box Widget 3-->
                 <div class="small-box" style="background-color:rgb(229, 226, 226); color:rgb(69, 69, 69); position: relative;">
                     <div class="inner">
-                        <h4>Calendar.</h4>
-                        <p><?= $todayscatholicdate->summary ?? 'No data available' ?></p>
+                        <h4>Prayers & Saints</h4>
+                        <p><?=$saintoftheday?>(Today's Saint)</p>
                     </div>
                     <!-- Catholic cross as background -->
                     <svg
@@ -114,7 +114,7 @@
                         ></path>
                     </svg>
                     <a
-                        href="#"
+                        href="<?=site_url('tabs/prayers')?>"
                         class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover"
                     >
                         More info <i class="bi bi-link-45deg"></i>
@@ -150,7 +150,7 @@
                     ></path>
                   </svg>
                   <a
-                    href="#"
+                    href="<?=site_url('tabs/treasury_report')?>"
                     class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
                   >
                     More info <i class="bi bi-link-45deg"></i>
@@ -166,48 +166,46 @@
               <!-- Start col -->
               <div class="col-lg-7 connectedSortable">
                 <div class="card mb-4">
-                  <div class="card-body bg-warning text-black border-white radius-3">
+                <a href="<?=site_url('/tabs/prayers')?>" class="text-decoration-none">
+                  <div class="card-body bg-warning text-black border-white radius-7">
                   <?php if (!empty($prayer)): ?>
                     <div class="card-header">
-                        <h2 class="card-title"><h4 class="typingEffect"><?= esc($prayer['title']) ?></h4></h2>
+                        <h2 class="card-title"><h4 class="typingEffect"><?= esc($dailyprayer['title']) ?> - (Today's Prayer)</h4></h2>
                     </div>
-                       <?php
-                            // Limit the paragraph content to 100 words
-
-                            $words = explode(' ', $prayer['content']);
-                            $wordCount = str_word_count($prayer['content']);
-                            if($wordCount>150){
-                                $limitedPrayer = implode(' ', array_slice($words, 0, 150)) . '...';
-                            }
-                            else{
-                                $limitedPrayer = $prayer['content'];
-                            }
+                      <?php
+                          // Limit the paragraph content to 40 words
+                          $words = explode(' ', $dailyprayer['content']);
+                          $limitedParagraph = implode(' ', array_slice($words, 0, 40));
                         ?>
-                      <p><?= esc($limitedPrayer) ?></p>
-                    <?php else: ?>
-                        <p>No prayer available for today. Please try again later.</p>
-                    <?php endif; ?>
+                        <p><?= esc($limitedParagraph) ?><?= count($words) > 40 ? '...' : '' ?></p>
+                  <?php else: ?>
+                      <p>No prayer available for today. Please try again later.</p>
+                  <?php endif; ?>
 
                   </div>
                 </div>
+                  </a>
                 <div class="card mb-4">
-                  <div class="card-body bg-primary text-white">
-                  <?php if (!empty($saint)): ?>
-                    <div class="card-header">
-                        <h2 class="card-title"><h3 class="typingEffect"><?= esc($saint['title']) ?></h3></h2>
-                    </div>
-                        <?php
-                            // Limit the paragraph content to 100 words
-                            $words = explode(' ', $saint['paragraphs']);
-                            $limitedParagraph = implode(' ', array_slice($words, 0, 100));
-                        ?>
-                        <p class="typingEffect"><?= esc($limitedParagraph) ?><?= count($words) > 100 ? '...' : '' ?></p>
+                <a href="<?=site_url('/tabs/prayers')?>" class="text-decoration-none">
+                  <div class="card-body bg-danger text-white">
+                    <?php if (!empty($saint)): ?>
+                      <div class="card-header">
+                        <h2 class="card-title">
+                          <h3 class="typingEffect"><?= esc($saint['title']) ?>✨</h3>
+                        </h2>
+                      </div>
+                      <?php
+                        // Limit the paragraph content to 40 words
+                        $words = explode(' ', $saint['paragraphs']);
+                        $limitedParagraph = implode(' ', array_slice($words, 0, 40));
+                      ?>
+                      <p><?= esc($limitedParagraph) ?><?= count($words) > 40 ? '...' : '' ?></p>
                     <?php else: ?>
-                        <p>No Saint Data available. Please try again later.</p>
+                      <p>No Saint Data available. Please try again later.</p>
                     <?php endif; ?>
-
-
                   </div>
+                </a>
+
                 </div>
                 <!-- /.card -->
                 <!-- DIRECT CHAT -->
@@ -451,6 +449,7 @@
               <!-- Start col -->
                
               <div class="col-lg-5 connectedSortable">
+              <a href="<?=site_url('/tabs/readings')?>" class="text-decoration-none">
                 <div class="card text-white bg-primary bg-primary border-primary mb-4">
                   <div class="card-header">
                     <h1 class="card-title">Today's Readings</h1>
@@ -469,30 +468,33 @@
                     </p>
                   </div>
                   <div class="card-footer border-0">
-                </div>
+                </div>  
               </div>
-              <div class="card text-black bg-white bg-primary border-white mb-4">
-                <div class="card-header">
-                    <h1 class="card-title typingEffect"><?= isset($mystery[0]['title']) ? htmlspecialchars($mystery[0]['title']) : 'Title not available'; ?></h1>
-                    
+              </a>
+              <a href="<?=site_url('/tabs/prayers')?>" class="text-decoration-none">
+                  <div class="card text-black bg-white bg-primary border-white mb-4">
+                    <div class="card-header">
+                        <h1 class="card-title typingEffect"><?= isset($mystery[0]['title']) ? htmlspecialchars($mystery[0]['title']) : 'Title not available'; ?></h1>
+                        
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            <?php if (!empty($mystery)): ?>
+                                <ul>
+                                    <?php foreach ($mystery as $mystery_item): ?>
+                                        <h4 class="text-black "><?= esc($mystery_item['mystery_number']) ?></h4>
+                                        <li class="text-black"><?= esc($mystery_item['mystery_title']) ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php else: ?>
+                                <p>No readings available for today.</p>
+                            <?php endif; ?>
+                        </p>
+                    </div>
+                    <div class="card-footer border-0">
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p>
-                        <?php if (!empty($mystery)): ?>
-                            <ul>
-                                <?php foreach ($mystery as $mystery_item): ?>
-                                    <h4 class="text-black "><?= esc($mystery_item['mystery_number']) ?></h4>
-                                    <li class="text-black"><?= esc($mystery_item['mystery_title']) ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php else: ?>
-                            <p>No readings available for today.</p>
-                        <?php endif; ?>
-                    </p>
-                </div>
-                <div class="card-footer border-0">
-                </div>
-            </div>
+             </a>
 
               <div class="info-box mb-3 text-bg-primary" style="background-color: #007bff; color: #ffffff;">
                 <span class="info-box-icon" style="display: flex; align-items: center; justify-content: center; padding: 10px;">
@@ -540,48 +542,7 @@
                 </div>
             </div>
         </div>
-        <div class="card text-white bg-primary  border-white ">
-            <?php if (!empty($saint)): ?>
-              <div class="card bg-white border-white text-black">
-                  <div class="card-header">
-                      <h2 class="card-title"><h3 class="typingEffect"><?=$saint['title']?></h3></h2>
-                  </div>
-                  
-                  <div class="card-body">
-                      <ul>
-                          <li><strong>Feast Day:</strong> <?= !empty($saint['feast_day']) ? esc($saint['feast_day']) : 'Not available' ?></li>
-                          <li><strong>Patron:</strong> <?= !empty($saint['patron']) ? esc($saint['patron']) : 'Not available' ?></li>
-                          <li><strong>Birth:</strong> <?= !empty($saint['birth']) ? esc($saint['birth']) : 'Not available' ?></li>
-                          <li><strong>Death:</strong> <?= !empty($saint['death']) ? esc($saint['death']) : 'Not available' ?></li>
-                          <li>
-                              <strong>YouTube Video:</strong>
-                              <?php
-                              if (!empty($saint['youtube_links'])):
-                                  // Decode the links if they are JSON-encoded
-                                  $youtubeLinks = json_decode($saint['youtube_links'], true);
 
-                                  if (is_array($youtubeLinks) && !empty($youtubeLinks)):
-                                      foreach ($youtubeLinks as $link): ?>
-                                          <a href="<?= esc($link) ?>" target="_blank"><?=$saint['title']?></a><br>
-                                      <?php endforeach; ?>
-                                  <?php else: ?>
-                                      <p>Invalid YouTube links format.</p>
-                                  <?php endif; ?>
-                              <?php else: ?>
-                                  Not available
-                              <?php endif; ?>
-                          </li>
-                      </ul>
-                  </div>
-              <?php else: ?>
-                  <p>No Saint Data available</p>
-              <?php endif; ?>
-            </div>
-          </div>
-            <div class="card-footer border-0">
-          </div>
-        <!-- /.Start col -->
-      </div>
 
             <!-- /.row (main row) -->
           </div>

@@ -38,7 +38,7 @@ $routes->group('tabs', function($routes) {
 
     // Liturgy routes
     
-    $routes->get('daily_prayers/(:num)', 'Dashboard::daily_prayers/$1');//DYNAMIC
+    $routes->get('prayers', 'Dashboard::prayers');
 
     $routes->get('choir', 'Dashboard::choir');
     $routes->get('readings', 'Dashboard::readings');
