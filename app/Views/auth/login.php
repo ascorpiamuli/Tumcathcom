@@ -8,177 +8,190 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        /* Global Styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    /* Global Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-        }
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f4f4f9;
+        color: #333;
+    }
 
-        /* Container */
-        .container {
-            display: flex;
-            height: 100vh;
-        }
+    /* Container */
+    .container {
+        display: flex;
+        height: 100vh;
+    }
 
-        /* Left Sidebar */
+    /* Left Sidebar */
+    .sidebar-left {
+        width: 350px;
+        background-color: #6a1b9a; /* Purple color */
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 50px 20px;
+        box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.1);
+        border-radius: 0px 10px 10px 0px;
+    }
+
+    .logo-container {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .logo {
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+    }
+
+    .details .community-name {
+        font-family: 'Crimson Pro', serif;
+        font-size: 2.2rem;
+        font-weight: normal;
+        margin-bottom: 5px;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    .details .slogan {
+        font-size: 1.2rem;
+        font-style: italic;
+        text-align: center;
+        color: #ffffff;
+    }
+
+    .details .community-name,
+    .details .slogan {
+        margin-bottom: 5px;
+    }
+
+    /* Right Content Section */
+    .content {
+        flex-grow: 1;
+        background-color: #ffffff;
+        padding: 40px 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .sign-in-form {
+        width: 100%;
+        max-width: 400px;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .sign-in-form h2 {
+        margin-bottom: 30px;
+        font-size: 24px;
+        font-weight: bold;
+        color: #6a1b9a; /* Purple color */
+        text-align: center;
+    }
+
+    .sign-in-form label {
+        font-weight: bold;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .sign-in-form input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 20px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+        color: #333;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .sign-in-form button {
+        width: 100%;
+        padding: 14px;
+        background-color: #6a1b9a; /* Purple color */
+        color: white;
+        font-size: 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .sign-in-form button:hover {
+        background-color: #4b1480; /* Darker purple */
+    }
+
+    .sign-in-form .forgot-password {
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .sign-in-form .forgot-password a {
+        color: #6a1b9a; /* Purple color */
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .sign-in-form .forgot-password a:hover {
+        text-decoration: underline;
+    }
+
+    .sign-in-form .register-link {
+        text-align: center;
+        font-size: 14px;
+        margin-top: 20px;
+    }
+
+    .sign-in-form .register-link a {
+        color: #6a1b9a; /* Purple color */
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .sign-in-form .register-link a:hover {
+        text-decoration: underline;
+    }
+
+    /* Footer */
+    .footer {
+        background-color: #6a1b9a; /* Purple color */
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-size: 14px;
+    }
+
+    .footer img {
+        width: 100px;
+        height: auto;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
         .sidebar-left {
-            width: 350px; 
-            background-color: #6a1b9a; /* Purple color */
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 50px 20px;
-            box-shadow: 3px 0px 10px rgba(0, 0, 0, 0.1);
-            border-radius: 0px 10px 10px 0px;
+            display: none; /* Hide the sidebar */
         }
 
-        .logo-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo {
-            width: 160px;
-            height: 160px;
-            border-radius: 50%;
-            margin-bottom: 20px;
-        }
-
-        .details .community-name {
-            font-family: 'Crimson Pro', serif;
-            font-size: 2.2rem;
-            font-weight: normal;
-            margin-bottom: 5px;
-            text-align: center;
-            color: #ffffff;
-        }
-
-        .details .slogan {
-            font-size: 1.2rem;
-            font-style: italic;
-            text-align: center;
-            color: #ffffff;
-        }
-
-        .details .community-name,
-        .details .slogan {
-            margin-bottom: 5px;
-        }
-
-        /* Right Content Section */
         .content {
-            flex-grow: 1;
-            background-color: #ffffff;
-            padding: 40px 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin-left: 0; /* Remove margin */
+            padding: 20px; /* Adjust padding for smaller screens */
         }
+    }
+</style>
 
-        .sign-in-form {
-            width: 100%;
-            max-width: 400px;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        .sign-in-form h2 {
-            margin-bottom: 30px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #6a1b9a; /* Purple color */
-            text-align: center;
-        }
-
-        .sign-in-form label {
-            font-weight: bold;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .sign-in-form input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-            color: #333;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .sign-in-form button {
-            width: 100%;
-            padding: 14px;
-            background-color: #6a1b9a; /* Purple color */
-            color: white;
-            font-size: 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .sign-in-form button:hover {
-            background-color: #4b1480; /* Darker purple */
-        }
-
-        .sign-in-form .forgot-password {
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .sign-in-form .forgot-password a {
-            color: #6a1b9a; /* Purple color */
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .sign-in-form .forgot-password a:hover {
-            text-decoration: underline;
-        }
-
-        .sign-in-form .register-link {
-            text-align: center;
-            font-size: 14px;
-            margin-top: 20px;
-        }
-
-        .sign-in-form .register-link a {
-            color: #6a1b9a; /* Purple color */
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .sign-in-form .register-link a:hover {
-            text-decoration: underline;
-        }
-
-        /* Footer */
-        .footer {
-            background-color: #6a1b9a; /* Purple color */
-            color: white;
-            text-align: center;
-            padding: 20px;
-            font-size: 14px;
-        }
-
-        .footer img {
-            width: 100px;
-            height: auto;
-        }
-    </style>
 </head>
 <body>
 

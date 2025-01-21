@@ -82,44 +82,104 @@
             overflow-y: auto; /* Make this section scrollable */
         }
 
-        .login-form {
-            width: 100%;
-            max-width: 700px;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
+       /* Form Alignment */
+.login-form {
+    width: 100%;
+    max-width: 790px;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin: 0 auto; /* Center the form horizontally */
+    text-align: center; /* Center text and content */
 
-        .login-form h2 {
-            margin-bottom: 30px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #6a1b9a; /* Purple color */
-            text-align: center;
-        }
+}
 
-        .form-group {
+/* Form Group Styling */
+.form-group {
+    display: flex;
+    flex-direction: column; /* Stack label and input */
+    align-items: center; /* Center align content within the form group */
+    margin-bottom: 20px;
+    width: 100%; /* Ensures proper alignment inside the form */
+}
+
+/* Label Styling */
+.form-group label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-align: start; /* Center-align label text */
+    width: 100%;
+    margin-left:220px;
+}
+
+/* Input Styling */
+.form-group input,
+.password-wrapper,
+.phone-input-wrapper {
+    width: 100%; /* Full width within the form group */
+    max-width: 400px; /* Limit maximum width for better alignment */
+}
+
+/* Password Wrapper and Phone Input Centered */
+.password-wrapper, .phone-input-wrapper {
+    display: flex;
+    justify-content: center;
+}
+
+/* Phone Prefix Styling */
+.phone-prefix {
+    background-color: #f0f0f0;
+    padding: 10px;
+    font-size: 16px;
+    color: #333;
+    border-right: 1px solid #ddd;
+}
+
+/* Password Eye Icon Styling */
+.password-wrapper .toggle-password {
+    right: 10px;
+    position: absolute;
+    font-size: 22px;
+    color: #888;
+    cursor:pointer;
+
+}
+
+
+.password-wrapper .toggle-password:hover {
+    color: #333;
+    cursor:pointer;
+}
+
+
+        /* Styling for the phone input wrapper */
+        .phone-input-wrapper {
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            font-weight: bold;
-            margin-bottom: 8px;
-            display: block;
-            width: 30%;
-        }
-
-        .form-group input {
-            width: 65%;
-            padding: 12px;
+            align-items: center;
             border: 1px solid #ddd;
             border-radius: 4px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            width: 80%; /* Matches other inputs' width */
+            overflow: hidden;
+        }
+
+        /* Prefix styling */
+        .phone-prefix {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-right: 1px solid #ddd;
             font-size: 16px;
             color: #333;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Phone input field styling */
+        .phone-input-wrapper input {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            padding: 12px;
+            font-size: 16px;
         }
 
         /* Button */
@@ -128,6 +188,7 @@
             padding: 14px;
             background-color: #6a1b9a; /* Purple color */
             color: white;
+
             font-size: 16px;
             border: none;
             border-radius: 4px;
@@ -145,6 +206,11 @@
             font-size: 14px;
             margin-top: 20px;
         }
+        .login-form h2{
+            color: #6a1b9a; /* Purple color */
+            margin-bottom:20px;
+            text-align:center;
+        }
 
         .back-to-login a {
             color: #6a1b9a; /* Purple color */
@@ -155,6 +221,124 @@
         .back-to-login a:hover {
             text-decoration: underline;
         }
+/* Adjustments for Medium Screens (Tablets and Small Laptops) */
+@media (max-width: 1024px) {
+    .sidebar-left {
+        width: 250px; /* Shrinks sidebar for medium screens */
+        padding: 30px 15px;
+    }
+
+    .content {
+        margin-left: 250px; /* Matches the reduced sidebar width */
+        padding: 20px;
+    }
+
+    .login-form {
+        max-width: 600px; /* Reduce form width */
+        padding: 20px;
+    }
+
+    .form-group label {
+        font-size: 14px; /* Slightly smaller labels */
+        margin-left: 10px; /* Adjust for alignment */
+    }
+
+    .form-group input {
+        font-size: 14px; /* Match input field text size */
+    }
+
+    .details .community-name {
+        font-size: 2rem; /* Adjust font size for community name */
+    }
+}
+
+/* Adjustments for Small Screens (Mobile Devices) */
+@media (max-width: 768px) {
+    .sidebar-left {
+        width: 40%; /* Shrinks sidebar further */
+        height: auto;
+        position: relative;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .content {
+        margin-left: 0; /* Stack the sidebar and content */
+        padding: 20px;
+    }
+
+    .form-group {
+        flex-direction: column;
+        align-items: flex-start; /* Align items to the start */
+    }
+
+    .form-group label {
+        width: 100%;
+        text-align: left;
+        margin-left: 0; /* Remove fixed margin */
+        font-size: 13px; /* Smaller labels */
+    }
+
+    .form-group input, 
+    .password-wrapper, 
+    .phone-input-wrapper {
+        width: 100%; /* Full width for inputs */
+    }
+}
+
+/* Adjustments for Very Small Screens (Extra Small Devices) */
+@media (max-width: 480px) {
+    .sidebar-left {
+        display: none; /* Hide the sidebar */
+    }
+
+    .logo {
+        width: 100px;
+        height: 100px; /* Smaller logo size */
+    }
+
+    .details .community-name {
+        font-size: 1.8rem; /* Reduce community name size */
+    }
+
+    .details .slogan {
+        font-size: 0.9rem; /* Shrink slogan font */
+    }
+
+    .login-form {
+        max-width: 100%; /* Full width for form */
+        padding: 15px;
+    }
+
+    .form-group label {
+        font-size: 12px; /* Compact label font */
+        margin-left: 0; /* Align to the left */
+    }
+
+    .form-group input {
+        font-size: 14px;
+        padding: 8px; /* Compact padding */
+    }
+
+    .login-form button {
+        padding: 12px; /* Smaller button size */
+        font-size: 14px;
+    }
+}
+
+/* General Adjustments for Better Scaling */
+@media (max-width: 360px) {
+    .sidebar-left {
+        display: none; /* Hide the sidebar */
+    }
+
+    .content {
+        margin-left: 0; /* Remove the sidebar margin */
+        padding: 20px; /* Add some padding for better content spacing */
+    }
+}
+
+
     </style>
 </head>
 <body>
@@ -181,27 +365,39 @@
             <?= csrf_field() ?>
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                <div class="phone-input-wrapper">
+                    <input type="text"  name="username" placeholder="Enter Your username" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <label for="email">Email Address</label>
+                <div class="phone-input-wrapper">
+                    <input type="email"  name="email" placeholder="Enter Your email address" required>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="phone">Phone Number (+254)</label>
-                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
+                <label for="phone">Phone</label>
+                <div class="phone-input-wrapper">
+                    <span class="phone-prefix">+254</span>
+                    <input type="tel" id="phone" name="phone" placeholder="795751700" maxlength="9" required>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <div class="phone-input-wrapper">
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <span class="toggle-password" data-target="password">&#128065;</span> <!-- Eye icon -->
+                </div>
             </div>
-
             <div class="form-group">
                 <label for="confirm_password">Confirm Password</label>
-                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                <div class="phone-input-wrapper">
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                    <span class="toggle-password" data-target="confirm_password">&#128065;</span> <!-- Eye icon -->
+                </div>
             </div>
 
             <button type="submit">Submit</button>
@@ -213,6 +409,22 @@
     </div>
 </div>
 <!-- End Right Content Section -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const toggleIcons = document.querySelectorAll('.toggle-password');
 
+    toggleIcons.forEach((icon) => {
+        icon.addEventListener('click', () => {
+            const target = document.getElementById(icon.getAttribute('data-target'));
+            const type = target.getAttribute('type') === 'password' ? 'text' : 'password';
+            target.setAttribute('type', type);
+
+            // Change the icon (optional)
+            icon.textContent = type === 'password' ? '👁️' : '🙈'; // Eye and crossed-eye emoji
+        });
+    });
+});
+
+</script>
 </body>
 </html>

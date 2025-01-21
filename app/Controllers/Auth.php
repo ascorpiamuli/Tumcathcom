@@ -29,7 +29,7 @@ class Auth extends BaseController
             $validationRules = [
                 'username' => 'required|is_unique[user_authentication.username]',
                 'email' => 'required|valid_email|is_unique[user_authentication.email]',
-                'phone' => 'required|regex_match[/^[0-9]{10}$/]',
+                'phone' => 'required|regex_match[/^7[0-9]{8}$/]',
                'password' => 'required|min_length[8]',
                'confirm_password' => 'required|matches[password]', // Ensure confirm password matches
             ];
@@ -40,7 +40,7 @@ class Auth extends BaseController
                 ],
 
                 'phone' => [
-                    'regex_match' => 'The phone number must be 12 digits long and consist of numbers only.'
+                    'regex_match' => 'The phone number must Start with 7..  (Should be 9 characters long) .'
                 ],
                 'email'=>[
                     'is_unique'=>'The Email Already Exists in the Database'
@@ -95,35 +95,40 @@ class Auth extends BaseController
     }
     
 
-    // Registration (Second Step)
     public function register()
     {
         $userId = session()->get('user_id');
         if (!$userId) {
             return redirect()->to('/auth/authentication');
         }
-
+    
         if ($this->request->getMethod() == 'POST') {
             $userProfileModel = new UserProfileModel();
-
+    
             // Validation rules
             $validationRules = [
                 'first_name' => 'required',
                 'last_name' => 'required',
-                'registration_number' => 'required|is_unique[user_profiles.registration_number]',
+                'registration_number' => [
+                    'rules' => 'required|is_unique[user_profiles.registration_number]|regex_match[/^[A-Z]{4}\/[0-9]{3}[A-Z]\/[0-9]{4}$/]',
+                    'errors' => [
+                        'regex_match' => 'The Registration Number is not in the correct Format.Should be in format BSIT/111J/2027',
+                        'is_unique' => 'The Registration Number already exists.',
+                    ],
+                ],
                 'dob' => 'required|valid_date',
-                'year_of_study' => 'required|numeric',
+                'year_of_study' => 'required',
                 'family' => 'required',
                 'course' => 'required',
                 'baptized' => 'required|in_list[yes,no]',
                 'confirmed' => 'required|in_list[yes,no]',
             ];
-
+    
             if (!$this->validate($validationRules)) {
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
-            $family=$this->request->getPost('family');
-
+    
+            $family = $this->request->getPost('family');
             $data = [
                 'user_id' => $userId,
                 'first_name' => $this->request->getPost('first_name'),
@@ -137,29 +142,27 @@ class Auth extends BaseController
                 'confirmed' => $this->request->getPost('confirmed') === 'yes' ? true : false,
                 'created_at' => date('Y-m-d H:i:s'),
             ];
+    
             $saintsModel = new SaintsModel();
-            // Query the saints database to check if the family exists
             $validFamily = $saintsModel->where('title', $family)->first();
-            // If the family doesn't exist in the database, set an error and redirect back
+    
             if (!$validFamily) {
-                // Set an error message and redirect back to the register page
                 session()->setFlashdata('error', 'Please select a valid family name From the Dropdown.');
                 return redirect()->to('/auth/register');
             }
-
+    
             if ($userProfileModel->save($data)) {
-                //  flash success message
-                session()->setFlashdata('success', 'Profile details saved successfully!'); // Show success message
-                return redirect()->to('/tabs/dashboard'); // Redirect after the message is set
+                session()->setFlashdata('success', 'Profile details saved successfully!');
+                return redirect()->to('/tabs/dashboard');
             } else {
-                // If save fails, flash error message
                 session()->setFlashdata('error', 'Failed to save Profile data.');
                 return redirect()->back();
             }
         }
-
+    
         return view('auth/register');
     }
+    
     // Login Method
     public function login()
     {

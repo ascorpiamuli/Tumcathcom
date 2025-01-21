@@ -30,6 +30,7 @@ $routes->group('tabs', function($routes) {
     // Family/Jumuia routes
     $routes->get('family', 'Dashboard::family_jumuia');
     $routes->get('semester-registration', 'Dashboard::semester_registration');
+    $routes->post('semester-registration', 'Dashboard::semester_registration'); // Add this line
     $routes->get('prayers_novena', 'Dashboard::prayers_novena');
 
     // TUMCathCom Reports
@@ -55,6 +56,7 @@ $routes->group('tabs', function($routes) {
     // Welfare
     $routes->get('welfare', 'Dashboard::welfare');
     $routes->get('liturgical_classes', 'Dashboard::liturgical_classes');
+    $routes->post('liturgical_classes', 'Dashboard::liturgical_classes');
 });
 $routes->get('saints', 'Scraper::fetchAndSaveSaints');
 $routes->get('readings','Scraper::fetchReadings');

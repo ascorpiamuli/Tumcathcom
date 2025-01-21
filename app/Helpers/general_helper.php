@@ -50,6 +50,23 @@ if (!function_exists('validateSessionToken')) {
         return $userAuthModel->where('session_token', $sessionToken)->first();
     }
 }
+function format_phone_number($phone_number) {
+    // Check if the phone number is already in the international format starting with '254'
+    if (preg_match('/^254\d{9}$/', $phone_number)) {
+        return $phone_number; // Return as-is
+    }
+    // Check if the phone number starts with '07' and has 10 digits
+    elseif (preg_match('/^07\d{8}$/', $phone_number)) {
+        // Replace leading '0' with '254'
+        return '254' . substr($phone_number, 1);
+    } else {
+        // Handle invalid phone numbers
+        throw new Exception("Invalid phone number format. Must start with '07' (10 digits) or '254' (12 digits).");
+    }
+}
+
+
+
 
 
 

@@ -8,66 +8,59 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
-        /* Basic styles for flash messages */
-        .alert {
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 80%;
-            max-width: 400px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            font-family: 'Arial', sans-serif;
-            transition: opacity 0.5s ease-in-out;
-            opacity: 0;
-            z-index: 9999;
-        }
+    /* Basic styles for flash messages */
+    .alert {
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: none;
+        position: fixed;
+        top: 20px;
+        right: -100%;  /* Initially off-screen to the right */
+        width: 80%;
+        max-width: 400px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-family: 'Arial', sans-serif;
+        transition: right 1s ease, opacity 1s ease;  /* Transition for slide and fade */
+        opacity: 0;  /* Initially invisible */
+        z-index: 9999;
+    }
 
-        .alert .close {
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #000;
-            position: absolute;
-            top: 5px;
-            right: 10px;
-            cursor: pointer;
-        }
+    .alert .close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #000;
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        cursor: pointer;
+    }
 
-        .alert i {
-            margin-right: 8px;
-            font-size: 18px;
-        }
+    .alert i {
+        margin-right: 8px;
+        font-size: 18px;
+    }
 
-        .alert-danger {
-            background-color: rgba(248, 215, 218, 0.9); /* Red with some transparency */
-            color: #721c24;
-            border-left: 5px solid #f5c6cb;
-        }
+    .alert-danger {
+        background-color: rgba(248, 215, 218, 0.9); /* Red with some transparency */
+        color: #721c24;
+        border-left: 5px solid #f5c6cb;
+    }
 
-        .alert-success {
-            background-color: rgba(212, 237, 218, 0.9); /* Green with some transparency */
-            color: #155724;
-            border-left: 5px solid #c3e6cb;
-        }
+    .alert-success {
+        background-color: rgba(212, 237, 218, 0.9); /* Green with some transparency */
+        color: #155724;
+        border-left: 5px solid #c3e6cb;
+    }
 
-        .alert-info {
-            background-color: rgba(209, 236, 241, 0.9); /* Blue with some transparency */
-            color: #0c5460;
-            border-left: 5px solid #bee5eb;
-        }
+    .alert-info {
+        background-color: rgba(209, 236, 241, 0.9); /* Blue with some transparency */
+        color: #0c5460;
+        border-left: 5px solid #bee5eb;
+    }
 
-        /* Fade-in and fade-out animations */
-        .fade {
-            opacity: 0;
-        }
 
-        .fade.show {
-            opacity: 1;
-        }
 
         /* Icon styles */
         .icon-success {
@@ -126,7 +119,7 @@
     </div>
 <?php endif; ?>
 
-<!-- JavaScript to handle the fade-in, fade-out, and error cycling -->
+<!-- JavaScript to handle the swipe-in and fade-out -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const showMessage = (elementId) => {
@@ -134,7 +127,8 @@
             if (message) {
                 message.style.display = 'block';  // Make the message visible
                 setTimeout(() => {
-                    message.classList.add('show');  // Apply fade-in class
+                    message.style.right = '20px';  // Move the message from right to the screen
+                    message.style.opacity = 1;  // Make it fully opaque
                 }, 100); // Delay to trigger transition
             }
         };
@@ -143,10 +137,11 @@
             setTimeout(() => {
                 const message = document.getElementById(elementId);
                 if (message) {
-                    message.classList.remove('show');  // Apply fade-out class
+                    message.style.right = '-100%';  // Move the message off-screen to the right
+                    message.style.opacity = 0;  // Make it invisible
                     setTimeout(() => {
                         message.style.display = 'none';  // Hide the message after fade-out
-                    }, 500); // Wait for fade-out to complete before hiding
+                    }, 1000); // Wait for fade-out to complete before hiding (longer for smoother transition)
                 }
             }, delay); // Delay before hiding the message (default 5 seconds)
         };
@@ -154,10 +149,11 @@
         const closeMessage = (event) => {
             const message = event.target.closest('.alert');
             if (message) {
-                message.classList.remove('show');  // Fade-out effect
+                message.style.right = '-100%';  // Move the message off-screen to the right
+                message.style.opacity = 0;  // Fade it out
                 setTimeout(() => {
                     message.style.display = 'none';  // Hide the message after fade-out
-                }, 500); // Wait for fade-out to complete before hiding
+                }, 1000); // Wait for fade-out to complete before hiding
             }
         };
 
@@ -187,6 +183,7 @@
         }
     });
 </script>
+
 
 </body>
 </html>

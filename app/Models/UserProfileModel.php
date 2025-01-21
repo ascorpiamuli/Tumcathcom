@@ -71,6 +71,39 @@ class UserProfileModel extends Model
             return $familyWithDot; // Return the formatted family name
         }
     }
+    public function save($data): bool
+    {
+        try {
+            // Attempt to insert the user data
+            $result = $this->insert($data);
+    
+            if ($result) {
+                // If insertion is successful, log and return true
+                log_message('info', "User data saved successfully.");
+                return true;
+            } else {
+                // If insertion fails, log the error and return false
+                log_message('error', "Failed to save user data: " . $this->errors());
+                return false;
+            }
+        } catch (DataException $e) {
+            // Log any database exceptions
+            log_message('error', "DataException: " . $e->getMessage());
+            return false;
+        }
+    }
+    public function getUserProfileById($user_id)
+    {
+        // Fetch all columns from the user_profiles table for the given user_id
+        $userProfile = $this->where('user_id', $user_id)->first();
+
+        // Check if the user profile exists
+        if ($userProfile) {
+            return $userProfile; // Return the user profile as an array
+        }
+
+        return null; // If user not found, return null
+    }
 
 
 }

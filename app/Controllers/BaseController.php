@@ -146,26 +146,40 @@ abstract class BaseController extends Controller
         }
 
         $fullName = $this->userProfileModel->getUserFullNameById($user_id);
+        $confirmationdata = $this->liturgicalClassesModel->getConfirmationData($fullName);
+        $dancersdata = $this->liturgicalDancersModel->getDancersData($fullName);
+        $serversdata = $this->liturgicalServersModel->getServersData($fullName);
+        $catechistdata = $this->liturgicalCatechistModel->getCatechistData($fullName);
+
         $datelogged = $this->userProfileModel->getDateEnteredById($user_id);
+        $userprofile = $this->userProfileModel->getUserProfileById($user_id);
         $family = $this->userProfileModel->getFamilyNamebyId($user_id);
+        $userauthprofile = $this->userAuthModel->getUserProfileById($user_id);
         $saint = $this->saintsModel->getSaintData($family);
         $readings = $serviceRequest->fetchReadings();
         $saintoftheday = $serviceRequest->getSaintOfTheDay();
         $prayer = $this->prayerModel->getRandomPrayer();
         $saintofthedaydata = $this->saintsModel->getSaintDatabySaintName($saintoftheday);
         $todayscatholicdate = $this->CatholicCalendarModel->fetchCatholicDays(date('Y-m-d'));
-
+        
         return array_merge($data, [
+            'confirmationdata' => $confirmationdata,
+            'catechistdata'=>$catechistdata,
             'todayscatholicdate' => $todayscatholicdate,
             'saintofthedaydata' => $saintofthedaydata,
             'saintoftheday' => $saintoftheday,
             'fullName' => $fullName,
+            'dancersdata' => $dancersdata,
             'family' => $family,
+            'userprofile' => $userprofile,
             'saint' => $saint,
             'readings' => $readings,
             'prayer' => $prayer,
+            'userauthprofile' => $userauthprofile,
             'pageTitle' => $pageTitle,
-            'datelogged' => $datelogged
+            'datelogged' => $datelogged,
+            'serversdata' => $serversdata // New variable added to avoid overwriting
         ]);
+        
     }
 }

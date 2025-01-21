@@ -162,6 +162,17 @@
             width: 100px;
             height: auto;
         }
+            /* Responsive Design */
+    @media (max-width: 480px) {
+        .sidebar-left {
+            display: none; /* Hide the sidebar */
+        }
+
+        .content {
+            margin-left: 0; /* Remove margin */
+            padding: 20px; /* Adjust padding for smaller screens */
+        }
+    }
     </style>
 </head>
 <body>

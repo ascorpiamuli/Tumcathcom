@@ -161,3 +161,13 @@ body {
 .back-to-login a:hover {
     text-decoration: underline;
 }
+@media (max-width: 480px) {
+    .sidebar-left {
+        display: none; /* Hide the sidebar */
+    }
+
+    .register-form {
+        margin-left: 0; /* Remove margin */
+        padding: 20px; /* Adjust padding for smaller screens */
+    }
+}

@@ -61,7 +61,7 @@
                         <option value="4">4th Year</option>
                         <option value="5">5th Year</option>
                         <option value="6">6th Year</option>
-                        <option value="7">7th Year</option>
+                        <option value="Post-Graduate">Post-Graduate</option>
                     </select>
                 </div>
 
@@ -92,7 +92,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="course">Course</label>
+                    <label for="course">School/Institute</label>
                     <select id="course" name="course" required>
                         <option value="" disabled selected>Select your School/Institute</option>
                         <option value="School of Engineering and Technology">School of Engineering and Technology</option>
