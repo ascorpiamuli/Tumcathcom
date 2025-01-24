@@ -36,7 +36,7 @@ abstract class BaseController extends Controller
      *
      * @var list<string>
      */
-    protected $helpers = ['general_helper'];
+    protected $helpers = ['general_helper','form_helper','session_helper'];
 
     /**
      * Be sure to declare properties for any property fetch you initialized.
@@ -146,6 +146,8 @@ abstract class BaseController extends Controller
         }
 
         $fullName = $this->userProfileModel->getUserFullNameById($user_id);
+        $assetsdata=$this->assetsModel->getAssetsData($fullName);
+        $registrationdata=$this->semesterRegistrationModel->getRegistrationData($fullName);
         $confirmationdata = $this->liturgicalClassesModel->getConfirmationData($fullName);
         $dancersdata = $this->liturgicalDancersModel->getDancersData($fullName);
         $serversdata = $this->liturgicalServersModel->getServersData($fullName);
@@ -163,7 +165,9 @@ abstract class BaseController extends Controller
         $todayscatholicdate = $this->CatholicCalendarModel->fetchCatholicDays(date('Y-m-d'));
         
         return array_merge($data, [
+            'assetsdata'=>$assetsdata,
             'confirmationdata' => $confirmationdata,
+            'registrationdata'=>$registrationdata,
             'catechistdata'=>$catechistdata,
             'todayscatholicdate' => $todayscatholicdate,
             'saintofthedaydata' => $saintofthedaydata,

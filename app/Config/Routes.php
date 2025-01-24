@@ -26,7 +26,8 @@ $routes->group('auth', function($routes) {
 $routes->group('tabs', function($routes) {
     // Default Dashboard route
     $routes->get('dashboard', 'Dashboard::index');
-
+    $routes->get('profile','Dashboard::profile');
+    $routes->post('profile','Dashboard::profile');
     // Family/Jumuia routes
     $routes->get('family', 'Dashboard::family_jumuia');
     $routes->get('semester-registration', 'Dashboard::semester_registration');
@@ -34,7 +35,8 @@ $routes->group('tabs', function($routes) {
     $routes->get('prayers_novena', 'Dashboard::prayers_novena');
 
     // TUMCathCom Reports
-    $routes->get('assets_report', 'Dashboard::assets_report');
+    $routes->get('assets', 'Dashboard::assets');
+    $routes->post('assets', 'Dashboard::assets');
     $routes->get('treasury_report', 'Dashboard::treasury_report');
 
     // Liturgy routes
@@ -61,7 +63,8 @@ $routes->group('tabs', function($routes) {
 $routes->get('saints', 'Scraper::fetchAndSaveSaints');
 $routes->get('readings','Scraper::fetchReadings');
 $routes->get('prayers','Scraper::fetchPrayers');
-$routes->get('/getJumuia', 'JumuiaController::getJumuia');
+$routes->get('/getJumuia', 'APIController::getJumuia');
+$routes->get('/getAssets', 'APIController::getAssets');
 $routes->get('/daily_prayers','Scraper::getDailyPrayers');
 $routes->get('/saveMysteries', 'Scraper::saveMysteriesOfTheRosary');
 $routes->get('import-calendar', 'CatholicCalendarController::importCalendar');

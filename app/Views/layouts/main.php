@@ -6,6 +6,7 @@
     <title><?= isset($pageTitle) ? $pageTitle : 'TUMCATHCOM'; ?></title>
     <!--begin::Primary Meta Tags-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <meta name="title" content="AdminLTE v4 | Dashboard" />
     <meta name="author" content="ColorlibHQ" />
     <meta
@@ -236,11 +237,11 @@
               <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                 <!--begin::User Image-->
                 <li class="user-header text-bg-primary">
-                  <img
-                    src="../../dist/assets/img/user2-160x160.jpg"
-                    class="rounded-circle shadow"
+                <img
+
+                    class="user-image rounded-circle shadow"
                     alt="User Image"
-                  />
+                />
                   <p>
                     <?=$fullName?>-<?=$family?>
                     <small> You Joined <?=$datelogged?></small>
@@ -251,7 +252,7 @@
                 <!--end::Menu Body-->
                 <!--begin::Menu Footer-->
                 <li class="user-footer">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a href="<?=site_url('tabs/profile')?>" class="btn btn-default btn-flat">Profile</a>
                   <a href="<?=site_url('auth/logout');?>" class="btn btn-default btn-flat float-end">Sign out</a>
                 </li>
                 <!--end::Menu Footer-->
@@ -274,11 +275,11 @@
             <img
               src="../../dist/assets/img/cathcomlogo.jpg"
               alt="CathcomLogo"
-              class="brand-image opacity-23 shadow"
+              class="brand-image"
             />
             <!--end::Brand Image-->
             <!--begin::Brand Text-->
-            <span class="brand-text fw-light">TUMCATHCOM</span>
+            <span class="brand-text">TUMCATHCOM</span>
             <!--end::Brand Text-->
           </a>
           <!--end::Brand Link-->
@@ -348,7 +349,7 @@
                   <li class="nav-item">
                     <a href="<?=site_url('tabs/liturgical_classes')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
-                      <p>Catechism Registration</p>
+                      <p>Classes Registration</p>
                     </a>
                   </li>
                 </ul>
@@ -364,19 +365,19 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="./layout/unfixed-sidebar.html" class="nav-link">
+                    <a href="<?=site_url('tabs/assets')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Book Asset</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./layout/fixed-sidebar.html" class="nav-link">
+                    <a href="<?=site_url('tabs/booking-history')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Booking History</p>
                     </a>
                   </li>
                   <li class="nav-item">
-                    <a href="./layout/sidebar-mini.html" class="nav-link">
+                    <a href="<?=site_url('tabs/assets-report')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Assets Report</p>
                     </a>
@@ -410,6 +411,12 @@
                       <p>Choir Store</p>
                     </a>
                   </li>
+                  <li class="nav-item">
+                    <a href="./UI/general.html" class="nav-link">
+                      <i class="nav-icon bi bi-circle"></i>
+                      <p>Classes Registration</p>
+                    </a>
+                  </li>
                 </ul>
               </li>
               <li class="nav-item">
@@ -433,7 +440,7 @@
               <li class="nav-item">
                 <a href="./docs/faq.html" class="nav-link">
                   <i class="nav-icon bi bi-question-circle-fill"></i>
-                  <p>FAQ</p>
+                  <p>FAQ &Help</p>
                 </a>
               </li>
               <li class="nav-item">
@@ -470,7 +477,7 @@
         <!--end::To the end-->
         <!--begin::Copyright-->
         <strong>
-          Copyright &copy; 2014-2024&nbsp;
+          Copyright &copy; 2025&nbsp;
           <a href="/" class="text-decoration-none">Ascorpi.io</a>.
         </strong>
         All rights reserved.

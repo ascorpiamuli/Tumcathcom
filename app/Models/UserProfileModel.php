@@ -7,105 +7,109 @@ use CodeIgniter\Model;
 class UserProfileModel extends Model
 {
     protected $table = 'user_profiles';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'user_id';
     protected $allowedFields = [
         'user_id', 'first_name', 'last_name', 'registration_number', 'dob',
         'year_of_study', 'family_jumuia', 'baptized', 'confirmed',
-        'course', 'created_at', 'updated_at',
+        'course', 'created_at', 'updated_at', 'profile_image'
     ];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    // Method to fetch and format full name (first_name + last_name)
+
+    // Method to fetch and format the date entered by the user
     public function getDateEnteredById($user_id)
     {
-        // Fetch the created_at date for the given user_id
+        log_message('info', "Fetching created_at for user_id: {$user_id}");
+
         $date = $this->select('created_at')
                      ->where('user_id', $user_id)
                      ->first();
-    
-        // Check if the date exists
-        if ($date) {
-            // Format the created_at date as 'Nov 23, 2024 at 4:34 AM/PM'
-            $formattedDate = (new \DateTime($date['created_at']))->format('M d, Y \a\t h:i A');
-            
-            return $formattedDate; // Return the formatted date string
-        }
-    
-        return null; // If user not found, return null
-    }
-    
 
-    // Method to fetch and format full name (first_name + last_name)
+        if ($date) {
+            $formattedDate = (new \DateTime($date['created_at']))->format('M d, Y \a\t h:i A');
+            log_message('info', "Formatted date for user_id {$user_id}: {$formattedDate}");
+            return $formattedDate;
+        }
+
+        log_message('error', "No created_at date found for user_id: {$user_id}");
+        return null;
+    }
+
+    // Method to fetch and format the user's full name
     public function getUserFullNameById($user_id)
     {
-        // Fetch the first_name and last_name for the given user_id
+        log_message('info', "Fetching full name for user_id: {$user_id}");
+
         $user = $this->select('first_name, last_name')
                     ->where('user_id', $user_id)
                     ->first();
 
-        // Capitalize the first letter of each name part and concatenate them
         if ($user) {
             $fullName = ucwords(strtolower($user['first_name'])) . ' ' . ucwords(strtolower($user['last_name']));
-            return $fullName; // Return the full name as one string
+            log_message('info', "Full name for user_id {$user_id}: {$fullName}");
+            return $fullName;
         }
 
-        return null; // If user not found, return null
+        log_message('error', "No user found for user_id: {$user_id}");
+        return null;
     }
+
+    // Method to fetch family name with proper formatting
     public function getFamilyNamebyId($user_id)
     {
+        log_message('info', "Fetching family name for user_id: {$user_id}");
+
         $user = $this->select('family_jumuia')
             ->where('user_id', $user_id)
             ->first();
 
         if ($user) {
-            // Replace underscores with spaces
             $familyUnderscores = str_replace('_', ' ', $user['family_jumuia']);
-
-            // Capitalize words
             $family = ucwords(strtolower($familyUnderscores));
-
-            // Add a period after "St" if it doesn't have one
             $familyWithDot = preg_replace('/\bSt\s/', 'St. ', $family);
-
-            return $familyWithDot; // Return the formatted family name
+            log_message('info', "Family name for user_id {$user_id}: {$familyWithDot}");
+            return $familyWithDot;
         }
+
+        log_message('error', "No family name found for user_id: {$user_id}");
+        return null;
     }
+
+    // Save method to insert user data
     public function save($data): bool
     {
+        log_message('info', "Attempting to save user data: " . json_encode($data));
+
         try {
-            // Attempt to insert the user data
             $result = $this->insert($data);
-    
+
             if ($result) {
-                // If insertion is successful, log and return true
                 log_message('info', "User data saved successfully.");
                 return true;
             } else {
-                // If insertion fails, log the error and return false
-                log_message('error', "Failed to save user data: " . $this->errors());
+                log_message('error', "Failed to save user data. Errors: " . json_encode($this->errors()));
                 return false;
             }
-        } catch (DataException $e) {
-            // Log any database exceptions
-            log_message('error', "DataException: " . $e->getMessage());
+        } catch (\Exception $e) {
+            log_message('error', "Exception while saving user data. Message: " . $e->getMessage());
             return false;
         }
     }
+
+    // Get user profile by ID
     public function getUserProfileById($user_id)
     {
-        // Fetch all columns from the user_profiles table for the given user_id
+        log_message('info', "Fetching user profile for user_id: {$user_id}");
+
         $userProfile = $this->where('user_id', $user_id)->first();
 
-        // Check if the user profile exists
         if ($userProfile) {
-            return $userProfile; // Return the user profile as an array
+            log_message('info', "User profile found for user_id: {$user_id}");
+            return $userProfile;
         }
 
-        return null; // If user not found, return null
+        log_message('error', "No user profile found for user_id: {$user_id}");
+        return null;
     }
-
-
 }
-
-

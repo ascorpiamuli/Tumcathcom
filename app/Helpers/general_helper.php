@@ -29,27 +29,6 @@ if (!function_exists('generateUserId')) {
     }
     
 }
-if (!function_exists('generateSessionToken')) {
-    // Generate a unique session token
-    function generateSessionToken() {
-        return bin2hex(random_bytes(16)); // Generate a 32-character hexadecimal token
-    }
-}
-
-if (!function_exists('setUserSession')) {
-    // Set the session data along with a unique session token
-    function setUserSession($userId, $sessionToken) {
-        session()->regenerate(); // Regenerate the session ID
-        session()->set(['user_id' => $userId, 'session_token' => $sessionToken]);
-    }
-}
-
-if (!function_exists('validateSessionToken')) {
-    // Validate the session token by checking if it exists in the database
-    function validateSessionToken($sessionToken, $userAuthModel) {
-        return $userAuthModel->where('session_token', $sessionToken)->first();
-    }
-}
 function format_phone_number($phone_number) {
     // Check if the phone number is already in the international format starting with '254'
     if (preg_match('/^254\d{9}$/', $phone_number)) {
@@ -64,6 +43,10 @@ function format_phone_number($phone_number) {
         throw new Exception("Invalid phone number format. Must start with '07' (10 digits) or '254' (12 digits).");
     }
 }
+
+
+
+
 
 
 

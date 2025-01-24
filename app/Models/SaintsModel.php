@@ -31,15 +31,35 @@ class SaintsModel extends Model
     
         return null; // Return null if no match is found
     }
-    public function getSaintData($family){
+    public function getSaintData($family)
+    {
         // Fetch the first matching record based on the saint name (title)
         $saint = $this->where('title', $family)->first();
-
+    
         if ($saint) {
-            return $saint; // Return the full saint data as an array
+            // Decode and clean data by removing square brackets, backslashes, and special characters
+            $cleanedSaintData = array_map(function ($value) {
+                if (is_string($value)) {
+                    $value = trim($value); // Remove extra spaces
+                    $value = htmlspecialchars_decode($value); // Decode special characters
+                    $value = str_replace(['[', ']', '\\'], '', $value); // Remove square brackets and backslashes
+                }
+                return $value;
+            }, $saint);
+    
+            // Log the cleaned saint data
+            log_message('info', 'Fetched and cleaned saint data: ' . json_encode($cleanedSaintData));
+    
+            return $cleanedSaintData; // Return the cleaned saint data
         }
-
+    
+        // Log a warning if no saint is found
+        log_message('warning', 'No saint data found for family: ' . $family);
+    
         return null; // Return null if no saint is found
     }
-
+    
+    
 }
+
+

@@ -130,7 +130,7 @@ class getServiceRequest
             $scrapedData['content'][] = 'No <h3> or <p> tags found inside bibleDailyReading.';
         }
         // Cache the scraped data for future use (e.g., cache for 1 hour)
-        $this->cache->save($cacheKey, $scrapedData, 3600); // Cache for 1 hour
+        $this->cache->save($cacheKey, $scrapedData, 86400); // Cache for 1 day
 
         log_message('info', 'Finished fetchReadings method');
 

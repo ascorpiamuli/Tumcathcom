@@ -516,7 +516,7 @@
                                 <!--end::Body-->
                                 <!--begin::Footer-->
                                 <div class="card-footer">
-                                <button class="btn btn-primary" id="submitButton" type="submit">Register for Confirmation</button>
+                                <button class="btn btn-primary" id="buttonSubmit" type="submit">Register for Confirmation</button>
                                 </div>
                                 <!--end::Footer-->
                             </form>
@@ -967,20 +967,21 @@ window.onload = function() {
     history.pushState(null, '', `?registration=${registrationStep}`);
 
 };
-
 </script>
 <script>
-  // Check the status of the confirmation request
-  var status = "<?php echo isset($confirmationdata['status']) ? $confirmationdata['status'] : 'null'; ?>";
-  //for liturgical dancers
-  var status2 = "<?php echo isset($dancersdata['status']) ? $dancersdata['status'] : 'null'; ?>";
-  var status3 = "<?php echo isset($serversdata['status']) ? $serversdata['status'] : 'null'; ?>";
-  var status4 = "<?php echo isset($catechistdata['status']) ? $catechistdata['status'] : 'null'; ?>";
-  if (status3) {
-    
-    // Create a div for the confirmation message
-    var statusDiv = document.createElement('div');
-    
+  // Utility function to create and display status message
+  function createStatusMessage(status, targetContainerId, submitButtonId) {
+    if (!status) return; // Exit if status is undefined or null
+
+    const statusLower = status.toLowerCase();
+    const targetContainer = document.getElementById(targetContainerId);
+    if (!targetContainer) {
+      console.error(`Target container with ID '${targetContainerId}' not found.`);
+      return;
+    }
+
+    // Create the status message div
+    const statusDiv = document.createElement('div');
     statusDiv.id = 'statusMessage';
     statusDiv.style.padding = '10px';
     statusDiv.style.marginTop = '10px';
@@ -988,13 +989,13 @@ window.onload = function() {
     statusDiv.style.display = 'flex';
     statusDiv.style.alignItems = 'center';
 
-    var icon = document.createElement('span');
+    const icon = document.createElement('span');
     icon.style.marginRight = '10px';
 
-    var message = document.createElement('span');
+    const message = document.createElement('span');
 
-    // Set styles and messages based on status
-    switch (status3.toLowerCase()) {
+    // Configure styles and messages based on status
+    switch (statusLower) {
       case 'pending':
         statusDiv.style.backgroundColor = '#ffcc80'; // Orange
         statusDiv.style.border = '1px solid #ccc';
@@ -1003,278 +1004,65 @@ window.onload = function() {
         message.innerHTML = `
           <strong>Pending Confirmation:</strong> Your registration is under confirmation. 
           Please wait for approval, which will take less than 48 hours. Approval is done by the Liturgical Coordinator.
-
         `;
-        console.log(message);
-        
         break;
+
       case 'approved':
         statusDiv.style.backgroundColor = '#d4edda'; // Green
         statusDiv.style.border = '1px solid #ccc';
         statusDiv.style.color = '#155724';
         icon.innerHTML = '&#9989;'; // Checkmark ✅
         message.innerHTML = `
-          <strong>Approved:</strong> Your Confirmation registration has been approved.Please wait for Class Schedule From the Liturgy Committee.
+          <strong>Approved:</strong> Your registration has been approved. Please wait for the Class Schedule from the Liturgy Committee.
         `;
         break;
+
       case 'declined':
         statusDiv.style.backgroundColor = '#f8d7da'; // Red
         statusDiv.style.border = '1px solid #ccc';
         statusDiv.style.color = '#721c24';
         icon.innerHTML = '&#10060;'; // Cross ❌
         message.innerHTML = `
-          <strong>Declined:</strong> Your registration has been declined. Please contact Liturgical Office.
+          <strong>Declined:</strong> Your registration has been declined. Please contact the Liturgical Office.
         `;
         break;
+
       default:
-        console.error('Unknown status:', status);
-        break;
+        console.error(`Unknown status: ${status}`);
+        return;
     }
 
     // Append icon and message to the status div
     statusDiv.appendChild(icon);
     statusDiv.appendChild(message);
 
-    // Append the div to a target container
-    var targetContainer = document.getElementById('serversContainer');
-    console.log(targetContainer);
-    
-    if (targetContainer) {
-      targetContainer.appendChild(statusDiv);
-    } else {
-      console.error("Target container for status message not found.");
-    }
+    // Append the status div to the target container
+    targetContainer.appendChild(statusDiv);
 
-    // Disable the form submission button if status is pending
-    if (status3.toLowerCase() === 'pending' || status3.toLowerCase()==='approved') {
-      var submitButton = document.getElementById('buttonSubmit3');
+    // Disable the form submission button if necessary
+    if (statusLower === 'pending' || statusLower === 'approved') {
+      const submitButton = document.getElementById(submitButtonId);
       if (submitButton) {
         submitButton.disabled = true;
       } else {
-        console.error("Submit button not found.");
+        console.error(`Submit button with ID '${submitButtonId}' not found.`);
       }
     }
   }
-  if (status2) {
-    // Create a div for the confirmation message
-    var statusDiv = document.createElement('div');
-    statusDiv.id = 'statusMessage';
-    statusDiv.style.padding = '10px';
-    statusDiv.style.marginTop = '10px';
-    statusDiv.style.borderRadius = '5px';
-    statusDiv.style.display = 'flex';
-    statusDiv.style.alignItems = 'center';
 
-    var icon = document.createElement('span');
-    icon.style.marginRight = '10px';
+  // Status values from server-side PHP
+  const status = "<?php echo isset($confirmationdata['status']) ? $confirmationdata['status'] : 'null'; ?>";
+  const status2 = "<?php echo isset($dancersdata['status']) ? $dancersdata['status'] : 'null'; ?>";
+  const status3 = "<?php echo isset($serversdata['status']) ? $serversdata['status'] : 'null'; ?>";
+  const status4 = "<?php echo isset($catechistdata['status']) ? $catechistdata['status'] : 'null'; ?>";
 
-    var message = document.createElement('span');
-
-    // Set styles and messages based on status
-    switch (status2.toLowerCase()) {
-      case 'pending':
-        statusDiv.style.backgroundColor = '#ffcc80'; // Orange
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#d35400';
-        icon.innerHTML = '&#128712;'; // Hourglass icon ⌛
-        message.innerHTML = `
-          <strong>Pending Confirmation:</strong> Your registration is under confirmation. 
-          Please wait for approval, which will take less than 48 hours. Approval is done by the Liturgical Coordinator.
-
-        `;
-        break;
-      case 'approved':
-        statusDiv.style.backgroundColor = '#d4edda'; // Green
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#155724';
-        icon.innerHTML = '&#9989;'; // Checkmark ✅
-        message.innerHTML = `
-          <strong>Approved:</strong> Your Confirmation registration has been approved.Please wait for Class Schedule From the Liturgy Committee.
-        `;
-        break;
-      case 'declined':
-        statusDiv.style.backgroundColor = '#f8d7da'; // Red
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#721c24';
-        icon.innerHTML = '&#10060;'; // Cross ❌
-        message.innerHTML = `
-          <strong>Declined:</strong> Your registration has been declined. Please contact Liturgical Office.
-        `;
-        break;
-      default:
-        console.error('Unknown status:', status);
-        break;
-    }
-
-    // Append icon and message to the status div
-    statusDiv.appendChild(icon);
-    statusDiv.appendChild(message);
-
-    // Append the div to a target container
-    var targetContainer = document.getElementById('dancersContainer');
-    if (targetContainer) {
-      targetContainer.appendChild(statusDiv);
-    } else {
-      console.error("Target container for status message not found.");
-    }
-
-    // Disable the form submission button if status is pending
-    if (status2.toLowerCase() === 'pending' || status2.toLowerCase()==='approved') {
-      var submitButton = document.getElementById('submitButton2');
-      if (submitButton) {
-        submitButton.disabled = true;
-      } else {
-        console.error("Submit button not found.");
-      }
-    }
-  }
-  if (status) {
-    // Create a div for the confirmation message
-    var statusDiv = document.createElement('div');
-    statusDiv.id = 'statusMessage';
-    statusDiv.style.padding = '10px';
-    statusDiv.style.marginTop = '10px';
-    statusDiv.style.borderRadius = '5px';
-    statusDiv.style.display = 'flex';
-    statusDiv.style.alignItems = 'center';
-
-    var icon = document.createElement('span');
-    icon.style.marginRight = '10px';
-
-    var message = document.createElement('span');
-
-    // Set styles and messages based on status
-    switch (status.toLowerCase()) {
-      case 'pending':
-        statusDiv.style.backgroundColor = '#ffcc80'; // Orange
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#d35400';
-        icon.innerHTML = '&#128712;'; // Hourglass icon ⌛
-        message.innerHTML = `
-          <strong>Pending Confirmation:</strong> Your registration is under confirmation. 
-          Please wait for approval, which will take less than 48 hours. Approval is done by the Liturgical Coordinator.
-
-        `;
-        break;
-      case 'approved':
-        statusDiv.style.backgroundColor = '#d4edda'; // Green
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#155724';
-        icon.innerHTML = '&#9989;'; // Checkmark ✅
-        message.innerHTML = `
-          <strong>Approved:</strong> Your Confirmation registration has been approved.Please wait for Class Schedule From the Liturgy Committee.
-        `;
-        break;
-      case 'declined':
-        statusDiv.style.backgroundColor = '#f8d7da'; // Red
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#721c24';
-        icon.innerHTML = '&#10060;'; // Cross ❌
-        message.innerHTML = `
-          <strong>Declined:</strong> Your registration has been declined. Please contact Liturgical Office.
-        `;
-        break;
-      default:
-        console.error('Unknown status:', status);
-        break;
-    }
-
-    // Append icon and message to the status div
-    statusDiv.appendChild(icon);
-    statusDiv.appendChild(message);
-
-    // Append the div to a target container
-    var targetContainer = document.getElementById('confirmationContainer');
-    if (targetContainer) {
-      targetContainer.appendChild(statusDiv);
-    } else {
-      console.error("Target container for status message not found.");
-    }
-
-    // Disable the form submission button if status is pending
-    if (status.toLowerCase() === 'pending' || status.toLowerCase()==='approved') {
-      var submitButton = document.getElementById('submitButton');
-      if (submitButton) {
-        submitButton.disabled = true;
-      } else {
-        console.error("Submit button not found.");
-      }
-    }
-  }
-  if (status4) {
-    // Create a div for the confirmation message
-    var statusDiv = document.createElement('div');
-    statusDiv.id = 'statusMessage';
-    statusDiv.style.padding = '10px';
-    statusDiv.style.marginTop = '10px';
-    statusDiv.style.borderRadius = '5px';
-    statusDiv.style.display = 'flex';
-    statusDiv.style.alignItems = 'center';
-
-    var icon = document.createElement('span');
-    icon.style.marginRight = '10px';
-
-    var message = document.createElement('span');
-
-    // Set styles and messages based on status
-    switch (status4.toLowerCase()) {
-      case 'pending':
-        statusDiv.style.backgroundColor = '#ffcc80'; // Orange
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#d35400';
-        icon.innerHTML = '&#128712;'; // Hourglass icon ⌛
-        message.innerHTML = `
-          <strong>Pending Confirmation:</strong> Your registration is under confirmation. 
-          Please wait for approval, which will take less than 48 hours. Approval is done by the Liturgical Coordinator.
-
-        `;
-        break;
-      case 'approved':
-        statusDiv.style.backgroundColor = '#d4edda'; // Green
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#155724';
-        icon.innerHTML = '&#9989;'; // Checkmark ✅
-        message.innerHTML = `
-          <strong>Approved:</strong> Your Confirmation registration has been approved.Please wait for Class Schedule From the Liturgy Committee.
-        `;
-        break;
-      case 'declined':
-        statusDiv.style.backgroundColor = '#f8d7da'; // Red
-        statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#721c24';
-        icon.innerHTML = '&#10060;'; // Cross ❌
-        message.innerHTML = `
-          <strong>Declined:</strong> Your registration has been declined. Please contact Liturgical Office.
-        `;
-        break;
-      default:
-        console.error('Unknown status:', status);
-        break;
-    }
-
-    // Append icon and message to the status div
-    statusDiv.appendChild(icon);
-    statusDiv.appendChild(message);
-
-    // Append the div to a target container
-    var targetContainer = document.getElementById('catechistContainer');
-    if (targetContainer) {
-      targetContainer.appendChild(statusDiv);
-    } else {
-      console.error("Target container for status message not found.");
-    }
-
-    // Disable the form submission button if status is pending
-    if (status4.toLowerCase() === 'pending' || status4.toLowerCase()==='approved') {
-      var submitButton = document.getElementById('submitButton4');
-      if (submitButton) {
-        submitButton.disabled = true;
-      } else {
-        console.error("Submit button not found.");
-      }
-    }
-  }
+  // Call the function for each status
+  createStatusMessage(status, 'confirmationContainer', 'buttonSubmit');
+  createStatusMessage(status2, 'dancersContainer', 'submitButton2');
+  createStatusMessage(status3, 'serversContainer', 'buttonSubmit3');
+  createStatusMessage(status4, 'catechistContainer', 'submitButton4');
 </script>
+
 
 
 

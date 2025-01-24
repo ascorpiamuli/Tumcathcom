@@ -110,7 +110,7 @@
     margin-bottom: 8px;
     text-align: start; /* Center-align label text */
     width: 100%;
-    margin-left:220px;
+    margin-left:320px;
 }
 
 /* Input Styling */
