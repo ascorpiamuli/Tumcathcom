@@ -163,15 +163,13 @@
                             </div>
                             </div>
 
-                        <!--begin::Col-->
-                        <div class="col-md-6">
-                          <label for="validationCustom04" class="form-label">Family/Jumuia</label>
-                          <select class="form-select" name="family" id="validationCustom04" required>
-                            <option value="<?=$family?>" selected><?=$family?></option>
-                        </select>
-                          <div class="invalid-feedback">Please select a valid Jumuia.</div>
-                        </div>
-                        <!--end::Col-->
+                            <div class="col-md-6">
+                              <label for="familySearch">Family/Jumuia</label>
+                              <input type="text" id="familySearch" name="family" class="form-control" placeholder="<?=$family?>" autocomplete="off" list="familyList"/>
+                              <datalist id="familyList">
+                                  <!-- Dynamically populated with search results -->
+                              </datalist>
+                          </div>
                         <!--begin::Col-->
                         <div class="col-md-6">
                         <label for="validationCustomPassword" class="form-label">Update Password</label>
@@ -423,5 +421,76 @@ document.getElementById('toggleConfirmPassword').addEventListener('click', funct
     }
   }
 </script>
+<script>
+    // Wait until the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        const familySearchInput = document.getElementById('familySearch');
+        const familyList = document.getElementById('familyList');
+        const registerForm = document.getElementById('registerForm');
+
+        // Store the valid family names for validation
+        let validFamilies = [];
+
+        // Attach event listener to the familySearch input field
+        familySearchInput.addEventListener('input', function () {
+            const query = this.value.trim(); // Get the input value and trim whitespace
+
+            // Reset datalist options
+            familyList.innerHTML = '';
+
+            if (query.length > 0) {
+                console.log('User is typing:', query); // Log the value in real-time
+
+                // Show a loading option in the datalist
+                const loadingOption = document.createElement('option');
+                loadingOption.value = 'Loading...';
+                familyList.appendChild(loadingOption);
+
+                // Make the API request to get the family names
+                fetch(`/tumcathcom/public/index.php/getJumuia?query=${encodeURIComponent(query)}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        familyList.innerHTML = ''; // Clear loading option
+
+                        if (data.length === 0) {
+                            const noResultOption = document.createElement('option');
+                            noResultOption.value = '';
+                            noResultOption.textContent = 'No matching results';
+                            familyList.appendChild(noResultOption);
+                        } else {
+                            validFamilies = data.map(item => item.title); // Assuming 'title' is the family name
+                            // Populate datalist with results from the API
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.title; // Assuming 'title' is the family name
+                                familyList.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching Jumuia:', error);
+                        const errorOption = document.createElement('option');
+                        errorOption.value = '';
+                        errorOption.textContent = 'Error fetching data';
+                        familyList.appendChild(errorOption);
+                    });
+            }
+        });
+
+        // Prevent form submission if the selected family is not in the valid list
+        registerForm.addEventListener('submit', function (e) {
+            const familyValue = familySearchInput.value.trim();
+            if (familyValue && !validFamilies.includes(familyValue)) {
+                e.preventDefault();
+                alert('Please select a valid family name from the dropdown');
+            }
+        });
+    });
+    </script>
 
 <?=$this->endSection()?>
