@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Interfaces\Forms;
+use App\Models\UserProfileModel;
 use CodeIgniter\HTTP\ResponseInterface;
 
 /**
@@ -10,14 +12,13 @@ use CodeIgniter\HTTP\ResponseInterface;
  *
  * FormsImplementor provides a convenient place for loading Form related Logic
  * and performing functions that are needed by all your Forms.
- *     class Home extends BaseController
  *
- * For security, be sure to declare any new methods as protected or private.
+ * For security, be sure to declare any new methods as protected or private but if the methods implement aninterface
+ * they must be public of course.
  */
-abstract class FormsImplementor extends BaseController
+abstract class FormsImplementor extends BaseController implements Forms
 {
-    // Private function to store form data submission
-    protected function storeFormData($registrationType,$session)
+    public function storeFormData($registrationType,$session)
     {
         // Define the first form data array (Step 1)
         $formData = [
@@ -92,59 +93,31 @@ abstract class FormsImplementor extends BaseController
         }
     }
 
-    protected function submitStep1FormData($registrationType,$session)
+    public function submitFormData($registrationType, $session, $model)
     {
-        // Validation rules with custom error messages
-        $validationRules= get_validation_rules($registrationType);
-        // Custom error messages
-        $errorMessages= get_error_messages($registrationType);
-        // Run validation with custom error messages
+        $validationRules = get_validation_rules($registrationType);
+        $errorMessages = get_error_messages($registrationType);
+    
         if (!$this->validate($validationRules, $errorMessages)) {
             $session->setFlashdata('errors', $this->validator->getErrors());
             return redirect()->back()->withInput();
         }
-        // Custom validation: Ensure phone numbers don't match
-        $yourphone = $this->request->getPost('yourphone');
-        $guardianphone = $this->request->getPost('guardianphone');
-        if ($yourphone === $guardianphone) {
+    
+        // Ensure phone numbers are not the same
+        if ($this->request->getPost('yourphone') === $this->request->getPost('guardianphone')) {
             $session->setFlashdata('error', 'Your phone number and guardian\'s phone number should not match.');
             return redirect()->back()->withInput();
         }
-        $formData=$this->storeFormData($registrationType,$session);
-        if ($this->liturgicalCatechistModel->saveData($formData)) {
-            $session->setFlashdata('success', 'Registration successful! Await approval by the Liturgical Coordinator.');
-        } else {
-            $session->setFlashdata('error', 'Failed to save registration details. Please try again.');
+    
+        $formData = $this->storeFormData($registrationType, $session);
+        if ($formData === null) {
+            $session->setFlashdata('error', 'Invalid form data.');
+            return redirect()->back();
         }
-        log_message('info', 'Form submitted: ' . json_encode($formData));
-    }
-    protected function submitStep2FormData($registrationType,$session)
-    {
-        // Validation rules with custom error messages
-        $validationRules= get_validation_rules($registrationType);
-        // Custom error messages
-        $errorMessages= get_error_messages($registrationType);
-        // Run validation with custom error messages
-        if (!$this->validate($validationRules, $errorMessages)) {
-            $session->setFlashdata('errors', $this->validator->getErrors());
-            return redirect()->back()->withInput();
-        }
-        // Custom validation: Ensure phone numbers don't match
-        $yourphone = $this->request->getPost('yourphone');
-        $guardianphone = $this->request->getPost('guardianphone');
-        if ($yourphone === $guardianphone) {
-            $session->setFlashdata('error', 'Your phone number and guardian\'s phone number should not match.');
-            return redirect()->back()->withInput();
-        }
-        $formData=$this->storeFormData($registrationType,$session);
-        if ($this->liturgicalClassesModel->saveData($formData)) {
-            $session->setFlashdata('success', 'Registration successful! Await approval by the Liturgical Coordinator.');
-        } else {
-            $session->setFlashdata('error', 'Failed to save registration details. Please try again.');
-        }
-        // Handle file upload
-        $file = $this->request->getFile('baptismal_certificate');
-        try {
+    
+        // Handle file upload if needed
+        if ($registrationType === 'step2') {
+            $file = $this->request->getFile('baptismal_certificate');
             if ($file->isValid() && !$file->hasMoved()) {
                 $uploadPath = WRITEPATH . 'uploads/';
                 if (!is_dir($uploadPath)) {
@@ -153,75 +126,18 @@ abstract class FormsImplementor extends BaseController
                 $file->move($uploadPath);
                 $formData['baptismal_certificate'] = $file->getName();
             }
-        } catch (\Exception $e) {
-            log_message('error', 'File upload failed: ' . $e->getMessage());
-            $session->setFlashdata('error', 'File upload failed. Please try again.');
-            return redirect()->back()->withInput();
         }
-        if ($this->liturgicalClassesModel->saveData($formData)) {
-            $session->setFlashdata('success', 'Registration successful! Await approval by the Liturgical Coordinator.');
+    
+        if ($model->saveData($formData)) {
+            $session->setFlashdata('success', 'Registration successful! Await approval.');
         } else {
             $session->setFlashdata('error', 'Failed to save registration details. Please try again.');
         }
-
-        log_message('info', 'Form submitted: ' . json_encode($formData));
-
-    }
-    protected function submitStep3FormData($registrationType,$session){
-        // Validation rules with custom error messages
-        $validationRules= get_validation_rules($registrationType);
-        // Custom error messages
-        $errorMessages= get_error_messages($registrationType);
-        // Run validation with custom error messages
-        if (!$this->validate($validationRules, $errorMessages)) {
-            $session->setFlashdata('errors', $this->validator->getErrors());
-            return redirect()->back()->withInput();
-        }
-        $formData=$this->storeFormData($registrationType,$session);
-        if ($this->liturgicalServersModel->saveData($formData)) {
-            $session->setFlashdata('success', 'Registration successful! Await approval by the Liturgical Coordinator.');
-        } else {
-            $session->setFlashdata('error', 'Failed to save registration details. Please try again.');
-        }
-
+    
         log_message('info', 'Form submitted: ' . json_encode($formData));
     }
-    protected function submitStep4FormData($registrationType, $session)
-    {
-        // Validation rules with custom error messages
-        $validationRules = get_validation_rules($registrationType);
-        // Custom error messages
-        $errorMessages = get_error_messages($registrationType);
-
-        // Run validation with custom error messages
-        if (!$this->validate($validationRules, $errorMessages)) {
-            $session->setFlashdata('errors', $this->validator->getErrors());
-            return redirect()->back()->withInput();
-        }
-
-        // Get the form data
-        $formData = $this->storeFormData($registrationType, $session);
-
-        // Check if $formData is valid
-        if ($formData === null) {
-            $session->setFlashdata('error', 'Invalid form data.');
-            return redirect()->back();
-        }
-
-        // Log the form data
-        log_message('debug', print_r($formData, true));
-
-        // Save data to the model
-        if ($this->liturgicalDancersModel->saveData($formData)) {
-            $session->setFlashdata('success', 'Registration successful! Await approval by the Liturgical Coordinator.');
-        } else {
-            $session->setFlashdata('error', 'Failed to save registration details. Please try again.');
-        }
-
-        // Log after form submission
-        log_message('info', 'Form submitted: ' . json_encode($formData));
-    }
-    protected function submitRegistrationData(){
+    
+    public function submitRegistrationData(){
 
             $phoneNumber = $this->request->getPost('phone');
             $amount = $this->request->getPost('amount');   
@@ -271,7 +187,8 @@ abstract class FormsImplementor extends BaseController
             }
 
     }
-    protected function submitAssetData($assetsData,$logger){
+    public function submitAssetData($assetsData, $logger)
+    {
         // Get other form data
         $phone = $this->request->getPost('phone');
         $family = $this->request->getPost('family');
@@ -281,11 +198,11 @@ abstract class FormsImplementor extends BaseController
         $location = $this->request->getPost('location');
         $hireDateTime = $this->request->getPost('hireDateTime');
         $returnDateTime = $this->request->getPost('returnDateTime');
-
-        // Define validation rules  and messages for common fields
-        $validationRules =get_validation_rules("assetscommon");
-        $validationMessages =get_error_messages("assetscommon");
-
+    
+        // Define validation rules and messages for common fields
+        $validationRules = get_validation_rules("assetscommon");
+        $validationMessages = get_error_messages("assetscommon");
+    
         // Validate common fields
         if (!$this->validate($validationRules, $validationMessages)) {
             $errors = $this->validator->getErrors();
@@ -293,119 +210,212 @@ abstract class FormsImplementor extends BaseController
             session()->setFlashdata('errors', $errors);
             return redirect()->back()->withInput();
         }
-
+    
         // Validate comments
         if (!empty($comments) && str_word_count($comments) > 40) {
             $errors['comments'] = 'Comments cannot exceed 40 words.';
             session()->setFlashdata('errors', $errors);
             return redirect()->back()->withInput();
         }
-
+    
         // Initialize an array to collect errors for assets
         $assetErrors = [];
         $hasValidationErrors = false;
+        
         // Process the received assets data here
         foreach ($assetsData as $key => $asset) {
             log_message('debug', "Processing Asset #$key: " . json_encode($asset));
-
+    
             // Ensure asset data is not empty
             if (empty($asset['assetname']) || empty($asset['category']) || empty($asset['condition']) || empty($asset['status']) || empty($asset['value']) || empty($asset['quantity'])) {
                 log_message('error', "Asset #$key has missing fields: " . json_encode($asset));
             }
-
+    
             // Define validation rules for each asset
-            $assetValidationRules =get_validation_rules("assets");
-
+            $assetValidationRules = get_validation_rules("assets");
             $assetValidationMessages = get_error_messages("assets");
-
+    
             // Add custom validation rules for status and condition
             if ($asset['status'] === 'Unavailable') {
                 $assetValidationMessages['status']['custom_error'] = 'You cannot book an "Unavailable" Asset. It is on Hire';
             }
-
+    
             if ($asset['condition'] === 'Poor') {
                 $assetValidationMessages['condition']['custom_error'] = 'You cannot be assigned a "Poor" condition Asset.';
             }
-
+    
             // Explicitly pass asset data to the validate method as an array
             $validation = \Config\Services::validation();
             $validation->setRules($assetValidationRules, $assetValidationMessages);
-
+    
             // Log validation data for debugging
             log_message('debug', "Validating Asset #$key: " . json_encode($asset));
-
+    
             // Validate asset data
             if (!$validation->run($asset)) {
                 $assetErrors[$key] = $validation->getErrors();
                 $hasValidationErrors = true;
-
+    
                 // Log validation errors for the asset
                 log_message('error', "Validation failed for Asset #$key: " . json_encode($assetErrors[$key]));
             }
-
+    
+            // Skip duplicate assets with the same booking_id, booked_by, and assetname
+            $existingAsset = $this->assetsModel->where('booking_id', $bookingid)
+                                               ->where('booked_by', $bookedBy)
+                                               ->where('name', $asset['assetname'])
+                                               ->first();
+    
+            if ($existingAsset) {
+                log_message('info', "Duplicate Asset #$key found for booking_id $bookingid and booked_by $bookedBy. Skipping insertion.");
+                continue; // Skip this asset if it already exists
+            }
+    
             // Prepare data for insertion if no errors
             if (!isset($assetErrors[$key])) {
-                // Check if the asset already exists for this booking_id and assetname
-                $existingAsset = $this->assetsModel->where('booking_id', $bookingid)
-                                                ->where('name', $asset['assetname'])
-                                                ->first();
-
-                if ($existingAsset) {
-                    // If asset already exists, update the quantity or any other fields if necessary
-                    log_message('info', "Asset #$key already exists for booking_id $bookingid. Updating the existing record.");
-
-                    // For example, update the quantity (or other fields as needed)
-                    $updatedData = [
-                        'quantity' => $existingAsset['quantity'] + $asset['quantity'], // Increment quantity
-                        'value' => $asset['value'], // Update value, you could handle other fields as well
-                    ];
-
-                    // Log the update operation
-                    log_message('debug', "Updating Asset #$key in database: " . json_encode($updatedData));
-
-                    // Update the existing asset record
-                    $this->assetsModel->update($existingAsset['id'], $updatedData);
-                } else {
-                    // If asset does not exist, insert it as a new asset
-                    $data = [
-                        'booking_id' => $bookingid,
-                        'phone' => $phone,
-                        'family' => $family,
-                        'comments' => $comments,
-                        'booked_by' => $bookedBy, 
-                        'location' => $location,
-                        'booking_start_date' => $hireDateTime,
-                        'booking_end_date' => $returnDateTime, 
-                        'name' => $asset['assetname'], 
-                        'category' => $asset['category'],
-                        'asset_condition' => $asset['condition'],
-                        'status' => $asset['status'],
-                        'value' => $asset['value'],
-                        'quantity' => $asset['quantity'],
-                    ];
-
-                    // Log data being inserted
-                    log_message('debug', "Inserting Asset #$key into database: " . json_encode($data));
-
-                    // Insert data into the database
-                    $this->assetsModel->insert($data);
-
-                    // Log successful insertion
-                    log_message('info', "Asset #$key successfully inserted into the database.");
-                }
+                // Insert data into the database as a new asset
+                $data = [
+                    'booking_id' => $bookingid,
+                    'phone' => $phone,
+                    'user_id' => $family,
+                    'comments' => $comments,
+                    'booked_by' => $bookedBy,
+                    'location' => $location,
+                    'booking_start_date' => $hireDateTime,
+                    'booking_end_date' => $returnDateTime,
+                    'name' => $asset['assetname'],
+                    'category' => $asset['category'],
+                    'asset_condition' => $asset['condition'],
+                    'status' => $asset['status'],
+                    'value' => $asset['value'],
+                    'quantity' => $asset['quantity'],
+                ];
+    
+                // Log data being inserted
+                log_message('debug', "Inserting Asset #$key into database: " . json_encode($data));
+    
+                // Insert data into the database
+                $this->assetsModel->insert($data);
+    
+                // Log successful insertion
+                log_message('info', "Asset #$key successfully inserted into the database.");
             }
         }
+    
         // If there are validation errors, set them in flashdata and return
         if ($hasValidationErrors) {
-           // session()->setFlashdata('assetErrors', $assetErrors);
             session()->setFlashdata('error', 'Fill all the Required Fields.');
             log_message('error', 'Validation errors occurred during asset processing.');
             return redirect()->back()->withInput();
-        }else{
-        // Set success message if no errors occurred
-        session()->setFlashdata('success', 'Booked successfully.Wait For approval by the Assets Manager.Communication will be Made Within 24 Hours');
-        log_message('info', 'All assets processed and saved successfully.');
+        } else {
+            // Set success message if no errors occurred
+            session()->setFlashdata('success', 'Booked successfully. Wait for approval by the Assets Manager. Communication will be made within 24 hours');
+            log_message('info', 'All assets processed and saved successfully.');
         }
     }
+    public function submitProfileData($session){
+        log_message('info', 'POST request received for profile update.');
+        log_message('debug', 'Received POST data: ' . json_encode($this->request->getPost()));
+
+        $rules = get_validation_rules('profile');
+        // Validate the form
+        if (!$this->validate($rules)) {
+            // Get the validation errors
+            $validationErrors = $this->validator->getErrors();
+
+            // Set the errors in the session flashdata
+            session()->setFlashdata('error', json_encode($validationErrors));
+
+            // Redirect to the same page with the validation errors
+            return redirect()->to(current_url())->withInput(); // withInput() keeps the old input data
+        }
+
+        // Get the current profile image name from the database
+        $userId = session()->get('user_id');
+        $userProfileModel = new UserProfileModel();
+        $currentProfile = $userProfileModel->find($userId);
+        $currentProfileImage = $currentProfile['profile_image']; // Assuming this is the current image filename
+
+        // Handle the uploaded profile image
+        $profileImageName = $this->request->getFile('profile_image');
+        $newProfileImage = $currentProfileImage; // Default to the current profile image
+
+        if ($profileImageName && $profileImageName->isValid() && !$profileImageName->hasMoved()) {
+            $newProfileImage = $profileImageName->getRandomName();
+
+            // Delete the previous profile image if it exists
+            if ($currentProfileImage && file_exists(WRITEPATH . 'uploads/profile_images/' . $currentProfileImage)) {
+                unlink(WRITEPATH . 'uploads/profile_images/' . $currentProfileImage);
+                log_message('info', 'Deleted previous profile image: ' . $currentProfileImage);
+            }
+
+            // Resize the new image to 160x160 and save
+            $image = \Config\Services::image()
+                ->withFile($profileImageName)
+                ->resize(160, 160, true)  // Resize and crop to 160x160
+                ->save(WRITEPATH . 'uploads/profile_images/' . $newProfileImage);
+
+            log_message('info', 'Profile image uploaded and resized: ' . $newProfileImage);
+        } else {
+            log_message('info', 'Using existing profile image: ' . $newProfileImage);
+        }
+
+        // Prepare data for updating
+        $authData = [
+            'email'        => $this->request->getPost('email'),
+            'phone_number' => $this->request->getPost('phone'),
+        ];
+        if ($this->request->getPost('password')) {
+            $authData['password'] = password_hash($this->request->getPost('password'), PASSWORD_BCRYPT);
+            log_message('debug', 'Password included for update.');
+        }
+
+        $profileData = [
+            'first_name'         => $this->request->getPost('fname'),
+            'last_name'          => $this->request->getPost('lname'),
+            'year_of_study'      => $this->request->getPost('yearofstudy'),
+            'registration_number' => $this->request->getPost('registration_number'),
+            'dob'                 => $this->request->getPost('dob'),
+            'family_jumuia'      => $this->request->getPost('family'),
+            'profile_image'      => $newProfileImage,
+        ];
+
+        log_message('debug', 'Prepared authData: ' . json_encode($authData));
+        log_message('debug', 'Prepared profileData: ' . json_encode($profileData));
+
+        // Database transaction
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            log_message('info', 'Processing updates for user ID: ' . $userId);
+
+            if (!empty($authData)) {
+                $this->userAuthModel->update($userId, $authData);
+                log_message('info', 'user_auth updated successfully.');
+            }
+
+            $this->userProfileModel->update($userId, $profileData);
+            log_message('info', 'user_profiles updated successfully.');
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                throw new \Exception('Transaction failed.');
+            }
+
+            session()->setFlashdata('success', 'Profile updated successfully!');
+            log_message('info', 'Profile update transaction committed successfully.');
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Error during profile update: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
+
+            session()->setFlashdata('error', 'There was an error updating your profile.');
+            return redirect()->to('/tabs/profile');
+        }
+    }
+    
+    
 
 }

@@ -65,6 +65,16 @@ if (!function_exists('get_validation_rules')) {
                     'value' => 'required',
                     'quantity' => 'required',
                 ];
+            case 'profile':
+                return[
+                    'fname'             => 'min_length[3]',
+                    'lname'             => 'min_length[3]',
+                    'email'             => 'valid_email',
+                    'phone'             => 'numeric|regex_match[/^[71]\d{8}$/]',
+                    'yearofstudy'       => 'required|numeric|min_length[1]|max_length[2]|less_than[7]',
+                    'password'          => 'permit_empty|min_length[6]',
+                    'confirm_password'  => 'matches[password]'
+                ];
             default:
                 return [];
         }

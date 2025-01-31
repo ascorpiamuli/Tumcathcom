@@ -147,6 +147,7 @@ abstract class BaseController extends Controller
 
         $fullName = $this->userProfileModel->getUserFullNameById($user_id);
         $assetsdata=$this->assetsModel->getAssetsData($fullName);
+        $allassetsdata=$this->assetsModel-> getAllAssetsData($fullName);
         $registrationdata=$this->semesterRegistrationModel->getRegistrationData($fullName);
         $confirmationdata = $this->liturgicalClassesModel->getConfirmationData($fullName);
         $dancersdata = $this->liturgicalDancersModel->getDancersData($fullName);
@@ -165,6 +166,7 @@ abstract class BaseController extends Controller
         $todayscatholicdate = $this->CatholicCalendarModel->fetchCatholicDays(date('Y-m-d'));
         
         return array_merge($data, [
+            'allassetsdata'=>$allassetsdata,
             'assetsdata'=>$assetsdata,
             'confirmationdata' => $confirmationdata,
             'registrationdata'=>$registrationdata,

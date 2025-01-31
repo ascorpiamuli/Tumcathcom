@@ -35,26 +35,15 @@
               <!--begin::Col-->
               <div class="col-lg-3 col-6">
                 <!--begin::Small Box Widget 1-->
-                <div class="small-box text-bg-warning">
-                  <div class="inner">
-                    <h4>Semester Registration</h4>
-                    <p>Make sure to Register for the Semester.Your Status:(<?php echo isset($registrationdata['status']) ? $registrationdata['status'] : 'Unregistered'; ?>)</p>
+                <div class="small-box text-bg-warning" style="height: 220px; display: flex; flex-direction: column; justify-content: space-between; padding: 15px; border-radius: 10px; text-align: center;">
+                  <div class="inner" style="flex-grow: 1; overflow: hidden;">
+                    <h5>Semester Registration</h5>
+                    <p>Make sure to Register for the Semester. Your Status: (<?php echo isset($registrationdata['status']) ? $registrationdata['status'] : 'Unregistered'; ?>)</p>
                   </div>
-                  <svg
-                    class="small-box-icon"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                     d="M3 4C3 3.44772 3.44772 3 4 3H15C16.1046 3 17 3.89543 17 5V19C17 20.1046 16.1046 21 15 21H4C3.44772 21 3 20.5523 3 20V4ZM15 5H4V19H15V5ZM19 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H19V4ZM7 7H12V8H9V10H12V11H9V13H12V14H7V7Z"
-                    ></path>
+                  <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width: 120px; height: 100px; margin: auto;">
+                    <path d="M3 4C3 3.44772 3.44772 3 4 3H15C16.1046 3 17 3.89543 17 5V19C17 20.1046 16.1046 21 15 21H4C3.44772 21 3 20.5523 3 20V4ZM15 5H4V19H15V5ZM19 4H20C21.1046 4 22 4.89543 22 6V18C22 19.1046 21.1046 20 20 20H19V4ZM7 7H12V8H9V10H12V11H9V13H12V14H7V7Z"></path>
                   </svg>
-                  <a
-                    href="<?=site_url('/tabs/semester-registration')?>"
-                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
-                  >
+                  <a href="<?=site_url('/tabs/semester-registration')?>" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover" style="padding: 8px; display: block; font-weight: bold; text-align: center;">
                     More info <i class="bi bi-link-45deg"></i>
                   </a>
                 </div>
@@ -63,26 +52,15 @@
               <!--end::Col-->
               <div class="col-lg-3 col-6">
                 <!--begin::Small Box Widget 2-->
-                <div class="small-box text-bg-white">
-                  <div class="inner">
-                    <h4>Today's Readings Calendar</h4>
-                  <?= $todayscatholicdate->summary ?? 'No data available' ?>
+                <div class="small-box text-bg-white" style="height: 220px; display: flex; flex-direction: column; justify-content: space-between; padding: 15px; border-radius: 10px; text-align: center;">
+                  <div class="inner" style="flex-grow: 1; overflow: hidden;">
+                    <h5>Today's Readings Calendar</h5>
+                    <?= $todayscatholicdate->summary ?? 'No data available' ?>
                   </div>
-                  <svg
-                    class="small-box-icon"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M3 4C3 3.44772 3.44772 3 4 3H9C10.1046 3 11 3.89543 11 5V19C11 20.1046 10.1046 21 9 21H4C3.44772 21 3 20.5523 3 20V4ZM9 5H4V19H9V5ZM15 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H15C13.8954 21 13 20.1046 13 19V5C13 3.89543 13.8954 3 15 3ZM15 5V19H20V5H15Z"
-                    ></path>
+                  <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width: 120px; height: 100px; margin: auto;">
+                    <path d="M3 4C3 3.44772 3.44772 3 4 3H9C10.1046 3 11 3.89543 11 5V19C11 20.1046 10.1046 21 9 21H4C3.44772 21 3 20.5523 3 20V4ZM9 5H4V19H9V5ZM15 3H20C20.5523 3 21 3.44772 21 4V20C21 20.5523 20.5523 21 20 21H15C13.8954 21 13 20.1046 13 19V5C13 3.89543 13.8954 3 15 3ZM15 5V19H20V5H15Z"></path>
                   </svg>
-                  <a
-                    href="<?=site_url('/tabs/readings')?>"
-                    class="small-box-footer text-black link-light link-underline-opacity-0 link-underline-opacity-50-hover"
-                  >
+                  <a href="<?=site_url('/tabs/readings')?>" class="small-box-footer text-black link-light link-underline-opacity-0 link-underline-opacity-50-hover" style="padding: 8px; display: block; font-weight: bold; text-align: center;">
                     More info <i class="bi bi-link-45deg"></i>
                   </a>
                 </div>
@@ -91,69 +69,35 @@
               <!--end::Col-->
               <div class="col-lg-3 col-6">
                 <!--begin::Small Box Widget 3-->
-                <div class="small-box bg-danger" style="color:rgb(255, 255, 255); position: relative;">
-                    <div class="inner">
-                        <h4>Prayers and Saints</h4>
-                        <?=$saintoftheday?>(Today's Saint)
-                        <p><?=$mystery[0]['title']?>(Today's Mystery)</p>
-                    </div>
-                    <!-- Catholic cross as background -->
-                    <svg
-                        class="small-box-icon"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.2; width: 80px; height: 80px;"
-                    >
-                        <path
-                            d="M12 2V22M2 12H22"
-                            stroke="#2a2a2a"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        ></path>
-                    </svg>
-                    <a
-                        href="<?=site_url('tabs/prayers')?>"
-                        class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover"
-                    >
-                        More info <i class="bi bi-link-45deg"></i>
-                    </a>
+                <div class="small-box bg-danger" style="color: rgb(255, 255, 255); position: relative; height: 220px; display: flex; flex-direction: column; justify-content: space-between; padding: 15px; border-radius: 10px; text-align: center;">
+                  <div class="inner" style="flex-grow: 1; overflow: hidden;">
+                    <h5>Prayers and Saints</h5>
+                    <?=$saintoftheday?>(Today's Saint)
+                   <p><?=$mystery[0]['title']?>(Today's Mystery)</p>
+                  </div>
+                  <!-- Catholic cross as background -->
+                  <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.2; width: 120px; height: 180px;">
+                    <path d="M12 2V22M2 12H22" stroke="#2a2a2a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  </svg>
+                  <a href="<?=site_url('tabs/prayers')?>" class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover" style="padding: 8px; display: block; font-weight: bold; text-align: center;">
+                    More info <i class="bi bi-link-45deg"></i>
+                  </a>
                 </div>
                 <!--end::Small Box Widget 3-->
-            </div>
-
+              </div>
               <!--end::Col-->
               <div class="col-lg-3 col-6">
                 <!--begin::Small Box Widget 4-->
-                <div class="small-box text-bg-success">
-                  <div class="inner">
-                  <h4>Assets Reports</h4>
-                  <p>Get all Assets Reports and Booking History.Your Latest Booking: (<?php echo isset($assetsdata['status']) ? $assetsdata['status'] : 'Not Yet Booked'; ?>)</p>
+                <div class="small-box text-bg-success" style="height: 220px; display: flex; flex-direction: column; justify-content: space-between; padding: 15px; border-radius: 10px; text-align: center;">
+                  <div class="inner" style="flex-grow: 1; overflow: hidden;">
+                    <h5>Assets Reports</h5>
+                    Get all Assets Reports and Booking History.Navigate to Assets & Hospitality tab.
                   </div>
-                  <svg
-                    class="small-box-icon"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                  >
-                    <path
-                      clip-rule="evenodd"
-                      fill-rule="evenodd"
-                      d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z"
-                    ></path>
-                    <path
-                      clip-rule="evenodd"
-                      fill-rule="evenodd"
-                      d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z"
-                    ></path>
+                  <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="width: 220px; height: 150px; margin: auto;">
+                    <path clip-rule="evenodd" fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z"></path>
+                    <path clip-rule="evenodd" fill-rule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z"></path>
                   </svg>
-                  <a
-                    href="<?=site_url('tabs/assets')?>"
-                    class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover"
-                  >
+                  <a href="<?=site_url('tabs/assets')?>" class="small-box-footer link-light link-underline-opacity-0 link-underline-opacity-50-hover" style="padding: 8px; display: block; font-weight: bold; text-align: center;">
                     More info <i class="bi bi-link-45deg"></i>
                   </a>
                 </div>
@@ -161,6 +105,7 @@
               </div>
               <!--end::Col-->
             </div>
+
             <!--end::Row-->
             <!--begin::Row-->
             <div class="row">

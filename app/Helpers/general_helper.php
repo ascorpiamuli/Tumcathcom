@@ -43,6 +43,21 @@ function format_phone_number($phone_number) {
         throw new Exception("Invalid phone number format. Must start with '07' (10 digits) or '254' (12 digits).");
     }
 }
+function generateBookingId() {
+    // Define all the uppercase alphabets to choose from
+    $alphabets = range('A', 'Z');
+    
+    // Start the booking ID with 'B'
+    $bookingId = 'B';
+    
+    // Generate 9 random characters from the alphabet to make the total length 10
+    for ($i = 0; $i < 9; $i++) {
+        $randomChar = $alphabets[array_rand($alphabets)];  // Randomly pick an alphabet
+        $bookingId .= $randomChar;
+    }
+    
+    return $bookingId;
+}
 
 
 

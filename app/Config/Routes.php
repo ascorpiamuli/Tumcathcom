@@ -38,6 +38,8 @@ $routes->group('tabs', function($routes) {
     $routes->get('assets', 'Dashboard::assets');
     $routes->post('assets', 'Dashboard::assets');
     $routes->get('treasury_report', 'Dashboard::treasury_report');
+    $routes->get('assets_report', 'Dashboard::assets_report');
+    $routes->get('booking-history', 'Dashboard::bookingHistory');
 
     // Liturgy routes
     
@@ -59,6 +61,7 @@ $routes->group('tabs', function($routes) {
     $routes->get('welfare', 'Dashboard::welfare');
     $routes->get('liturgical_classes', 'Dashboard::liturgical_classes');
     $routes->post('liturgical_classes', 'Dashboard::liturgical_classes');
+    $routes->post('deleteProfile', 'Dashboard::deleteProfile');
 });
 $routes->get('saints', 'Scraper::fetchAndSaveSaints');
 $routes->get('readings','Scraper::fetchReadings');
@@ -68,3 +71,6 @@ $routes->get('/getAssets', 'APIController::getAssets');
 $routes->get('/daily_prayers','Scraper::getDailyPrayers');
 $routes->get('/saveMysteries', 'Scraper::saveMysteriesOfTheRosary');
 $routes->get('import-calendar', 'CatholicCalendarController::importCalendar');
+$routes->get('getAssets/(:any)', 'APIController::getAssetsbyId/$1');
+$routes->get('/uploads/(:any)', 'APIController::showProfileImage/$1');
+

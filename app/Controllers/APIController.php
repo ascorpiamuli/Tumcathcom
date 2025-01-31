@@ -5,9 +5,17 @@ namespace App\Controllers;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Database\BaseBuilder;
+use App\Models\AssetsModel;
 
 class APIController extends BaseController
 {
+    protected $assetsModel;
+    public function __construct()
+    {
+        // Load the AssetsModel
+        $this->assetsModel = new AssetsModel();  // Note the corrected property name
+    }
+    
     public function getJumuia()
     {
         log_message('info', 'Inside getJumuia method');
@@ -87,6 +95,63 @@ class APIController extends BaseController
             ]);
         }
     }
+    public function getAssetsbyId($booking_id)
+    {
+        // Log the incoming booking ID
+        log_message('debug', 'Fetching assets for Booking ID: ' . $booking_id);
+    
+        // Fetch the assets from the database using the booking_id
+
+       
+        $assets = $this->assetsModel->getAssetsbyId($booking_id);
+    
+        // Check if assets are found
+        if ($assets) {
+            // Log success and the number of assets found
+            log_message('debug', 'Assets found for Booking ID: ' . $booking_id . '. Total assets: ' . count($assets));
+    
+            return $this->response->setJSON([
+                'success' => true,
+                'assets' => $assets
+            ]);
+        } else {
+            // Log that no assets were found for the booking
+            log_message('debug', 'No assets found for Booking ID: ' . $booking_id);
+    
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'No assets found for this booking.'
+            ]);
+        }
+    }
+    public function showProfileImage($filename)
+    {
+        // Log the incoming request with the filename
+        log_message('info', 'Request received for profile image: ' . $filename);
+
+        // Define the path to the profile images folder
+        $filePath = WRITEPATH . 'uploads/profile_images/' . $filename;
+
+        // Log the file path being checked
+        log_message('debug', 'Checking if file exists at: ' . $filePath);
+
+        // Check if the file exists
+        if (file_exists($filePath)) {
+            // Log success when the file is found
+            log_message('info', 'File found: ' . $filePath);
+
+            // Return the image file as a response
+            return $this->response->download($filePath, null, true);
+        } else {
+            // Log the error if the file is not found
+            log_message('error', 'File not found: ' . $filePath);
+
+            // Handle the error if the file is not found
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Image not found");
+        }
+    }
+    
+
     
     
     

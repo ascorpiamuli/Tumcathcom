@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controllers;
-
+//models
 use App\Models\UserProfileModel;
 use App\Models\SaintsModel;
 use App\Models\PrayerModel;
@@ -14,6 +14,8 @@ use App\Models\LiturgicalDancersModel;
 use App\Models\LiturgicalCatechistModel;
 use App\Models\SemesterRegistrationModel;
 use App\Models\AssetsModel;
+use App\Controllers\FormsImplementor;
+
 // Handle profile image upload
 use CodeIgniter\Images\Image;
 
@@ -113,11 +115,12 @@ class Dashboard extends FormsImplementor
     public function assets() {
         // Get common data (optional for your view rendering)
         $data = $this->getCommonData('Assets Management');
-
+    
         // Initialize logger (optional for logging actions)
         $logger = service('logger');
-        $session=session();
-
+        $session = session();
+    
+        // Check if the request method is POST
         if ($this->request->getMethod() === 'POST') {
             // Check if the request contains the assets data
             $assetsData = json_decode($this->request->getPost('assetsData'), true);
@@ -127,15 +130,30 @@ class Dashboard extends FormsImplementor
                 session()->setFlashdata('error', 'Please Fill all the Required Asset Data and Try again.');
                 return redirect()->back()->withInput();
             }
-
-            $this->submitAssetData($assetsData,$logger);
+    
+            // Check the timestamp of the last request
+            $lastRequestTime = $session->get('lastRequestTime');
+            $currentTime = time();
+            
+            // If the last request was made within the last 10 minutes, set a flash message
+            if ($lastRequestTime && ($currentTime - $lastRequestTime) < 600) {  // 600 seconds = 10 minutes
+                session()->setFlashdata('info', 'Please wait 10 minutes before submitting again to prevent spamming Bookings.');
+                return redirect()->back()->withInput();
+            }
+    
+            // Update the last request time in session
+            $session->set('lastRequestTime', $currentTime);
+    
+            // Submit the asset data
+            $this->submitAssetData($assetsData, $logger);
+    
             return redirect()->to('/tabs/assets');
         }
-
+    
         // Return the view with common data (optional for your view rendering)
         return view('/tabs/assets', $data);
     }
-
+    
     
 
     public function liturgical_classes()
@@ -144,19 +162,19 @@ class Dashboard extends FormsImplementor
         $registrationType = $this->request->getGet('registration');
         //catechism classes
         if ($registrationType == 'step1' && $this->request->getMethod() == 'POST') {
-           $this->submitStep1FormData($registrationType,$session);
+            $this->submitFormData($registrationType, $session, $this->liturgicalCatechistModel);
         }    
         //confirmation classes
         if ($registrationType == 'step2' && $this->request->getMethod() == 'POST') { 
-            $this->submitStep2FormData($registrationType,$session);       
+            $this->submitFormData($registrationType, $session, $this->liturgicalClassesModel);     
         }
         //altar servers registration
         if ($registrationType == 'step3' && $this->request->getMethod() == 'POST') {
-            $this->submitStep3FormData($registrationType,$session);
+            $this->submitFormData($registrationType, $session, $this->liturgicalServersModel);
         }
         //liturgical dancers registration
         if ($registrationType == 'step4' && $this->request->getMethod() == 'POST') {
-            $this->submitStep4FormData($registrationType,$session);
+            $this->submitFormData($registrationType, $session, $this->liturgicalDancersModel);
         }
         $data = $this->getCommonData('Liturgical Classes');
         return view('tabs/liturgical_classes', $data);
@@ -186,123 +204,48 @@ class Dashboard extends FormsImplementor
     public function profile()
     {
         $data = $this->getCommonData('My Profile');
-        $validation = \Config\Services::validation();
-        log_message('info', 'Profile update process initiated.');
-    
+        $validation = \Config\Services::validation();    
         if ($this->request->getMethod() === 'POST') {
-            log_message('info', 'POST request received for profile update.');
-            log_message('debug', 'Received POST data: ' . json_encode($this->request->getPost()));
-    
-            $rules = [
-                'fname'             => 'min_length[3]',
-                'lname'             => 'min_length[3]',
-                'email'             => 'valid_email',
-                'phone'             => 'numeric|regex_match[/^[71]\d{8}$/]', // Starts with 7 or 1 and is 9 digits in total
-                'yearofstudy'       => 'required|numeric|min_length[1]|max_length[2]|less_than[7]',
-                'password'          => 'permit_empty|min_length[6]',
-                'confirm_password'  => 'matches[password]',
-            ];
-            
-    
-            if (!$this->validate($rules)) {
-                // Get the validation errors
-                $validationErrors = $this->validator->getErrors();
-                
-                // Set the errors in the session flashdata
-                session()->setFlashdata('error', json_encode($validationErrors));
-                
-                // Redirect to the same page with the validation errors
-                return redirect()->to(current_url())->withInput(); // withInput() keeps the old input data
-            }
-            
-            
-    
+            $session=session();
+          if($this->submitProfileData($session)){
+            $session->setFlashData('success','Profile Data Updated Successfully.');
+            return redirect()->to('/tabs/dashboard');
+          }
+          $session->setFlashData('error','Error Updating Profile.');
+          return redirect()->to('/tabs/profile');
 
-
-            $profileImageName = $this->request->getFile('profile_image');
-            $newProfileImage = null;
-            
-            if ($profileImageName && $profileImageName->isValid() && !$profileImageName->hasMoved()) {
-                $newProfileImage = $profileImageName->getRandomName();
-            
-                // Resize the image to 160x160
-                $image = \Config\Services::image()
-                    ->withFile($profileImageName)
-                    ->resize(160, 160, true)  // Resize and crop to 160x160
-                    ->save(WRITEPATH . 'uploads/profile_images/' . $newProfileImage);
-            
-                log_message('info', 'Profile image uploaded and resized: ' . $newProfileImage);
-            } else {
-                $newProfileImage = $this->request->getPost('current_profile_image');
-                log_message('info', 'Using existing profile image: ' . $newProfileImage);
-            }
-            
-    
-            // Prepare data for updating
-            $authData = [
-                'email'        => $this->request->getPost('email'),
-                'phone_number' => $this->request->getPost('phone'),
-            ];
-            if ($this->request->getPost('password')) {
-                $authData['password'] = password_hash($this->request->getPost('password'), PASSWORD_BCRYPT);
-                log_message('debug', 'Password included for update.');
-            }
-    
-            $profileData = [
-                'first_name'         => $this->request->getPost('fname'),
-                'last_name'         => $this->request->getPost('lname'),
-                'year_of_study'       => $this->request->getPost('yearofstudy'),
-                'registration_number' => $this->request->getPost('registration_number'),
-                'dob'                 => $this->request->getPost('dob'),
-                'family'              => $this->request->getPost('family'),
-                'profile_image'       => $newProfileImage,
-            ];
-    
-            log_message('debug', 'Prepared authData: ' . json_encode($authData));
-            log_message('debug', 'Prepared profileData: ' . json_encode($profileData));
-    
-            // Database transaction
-            $db = \Config\Database::connect();
-            $db->transStart();
-    
-            try {
-                $userId = session()->get('user_id');
-                log_message('info', 'Processing updates for user ID: ' . $userId);
-    
-                if (!empty($authData)) {
-                    $this->userAuthModel->update($userId, $authData);
-                    log_message('info', 'user_auth updated successfully.');
-                }
-    
-                $this->userProfileModel->update($userId, $profileData);
-                log_message('info', 'user_profiles updated successfully.');
-    
-                $db->transComplete();
-    
-                if ($db->transStatus() === false) {
-                    throw new \Exception('Transaction failed.');
-                }
-    
-                session()->setFlashdata('success', 'Profile updated successfully!');
-                log_message('info', 'Profile update transaction committed successfully.');
-                return redirect()->to('/tabs/profile');
-            } catch (\Exception $e) {
-                $db->transRollback();
-                log_message('error', 'Error during profile update: ' . $e->getMessage());
-                log_message('error', 'Stack trace: ' . $e->getTraceAsString());
-    
-                session()->setFlashdata('error', 'There was an error updating your profile.');
-                return redirect()->to('/tabs/profile');
-            }
         }
-    
-        log_message('info', 'Loading profile view.');
         return view('tabs/profile', $data);
     }
     
-    
-    
-
+    public function bookingHistory()
+    {   
+        // Fetch common data, including the user's full name
+        $data = $this->getCommonData('Booking History');  
+        $userId = $data['userprofile']['user_id'];
+        // Fetch all assets booked by the user
+        $allassetsdata = $this->assetsModel->where('user_id', $userId)->findAll(); 
+        // Add assets count to each booking
+        foreach ($allassetsdata as &$booking) {
+            $assetsCount = $this->assetsModel->countAssetsForBooking($booking['booking_id']);
+            $booking['assets_count'] = $assetsCount !== null ? $assetsCount : 0; // Ensure we set a valid count
+        }    
+        return view('tabs/booking-history', ['allassetsdata' => $allassetsdata] + $data);
+    }
+    public function  assets_report()
+    {
+        // Fetch common data, including the user's full name
+        $data = $this->getCommonData('Assets Report');  
+        $userId = $data['userprofile']['user_id'];
+        // Fetch all assets booked by the user
+        $allassetsdata = $this->assetsModel->where('user_id', $userId)->findAll(); 
+        // Add assets count to each booking
+        foreach ($allassetsdata as &$booking) {
+            $assetsCount = $this->assetsModel->countAssetsForBooking($booking['booking_id']);
+            $booking['assets_count'] = $assetsCount !== null ? $assetsCount : 0; // Ensure we set a valid count
+        }    
+        return view('tabs/assets_report', ['allassetsdata' => $allassetsdata] + $data);
+    }
 
     public function readings()
     {
@@ -376,4 +319,52 @@ class Dashboard extends FormsImplementor
         $data = $this->getCommonData('Welfare');
         return view('tabs/welfare', $data);
     }
+    public function deleteProfile()
+    {
+        $userId = session()->get('user_id');  // Assuming the user ID is stored in session
+    
+        if ($userId) {
+            // Start transaction to ensure all related data is deleted
+            $db = \Config\Database::connect();
+            $db->transStart();  // Start a transaction
+    
+            // Delete user authentication data
+            $this->userAuthModel->delete(['user_id' => $userId]);
+    
+            // Delete user's profile data 
+            $this->userProfileModel->delete(['user_id' => $userId]);
+    
+            // Check if there are any assets associated with the user
+            $assets = $this->assetsModel->where('user_id', $userId)->findAll();
+    
+            if ($assets) {
+                // Delete associated asset data
+                $this->assetsModel->delete(['user_id' => $userId]);
+                log_message('info', 'Assets associated with user ID ' . $userId . ' have been deleted.');
+            } else {
+                log_message('info', 'No assets found for user ID ' . $userId . ' to delete.');
+            }
+    
+            // Commit the transaction if everything went well
+            $db->transComplete();
+    
+            if ($db->transStatus() === false) {
+                // If any of the delete operations fail, rollback and return error
+                return $this->response->setJSON(['success' => false, 'message' => 'Error deleting profile data']);
+            }
+    
+            // If everything is successful, set success message
+            session()->setFlashdata('success', 'Profile and associated data deleted successfully!');
+    
+            // Now destroy the session after the successful deletion
+            session()->destroy();  // Destroy the session to log the user out
+    
+            // Return success response
+            return $this->response->setJSON(['success' => true]);
+        }
+    
+        // If no user ID in session, return error response
+        return $this->response->setJSON(['success' => false, 'message' => 'User not logged in']);
+    }
 }
+

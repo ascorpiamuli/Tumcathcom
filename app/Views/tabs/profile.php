@@ -165,10 +165,7 @@
 
                             <div class="col-md-6">
                               <label for="familySearch">Family/Jumuia</label>
-                              <input type="text" id="familySearch" name="family" class="form-control" placeholder="<?=$family?>" autocomplete="off" list="familyList"/>
-                              <datalist id="familyList">
-                                  <!-- Dynamically populated with search results -->
-                              </datalist>
+                              <input type="text" id="familySearch" name="family" class="form-control" value="<?=$family?>" readonly autocomplete="off" list="familyList"/>
                           </div>
                         <!--begin::Col-->
                         <div class="col-md-6">
@@ -402,24 +399,38 @@ document.getElementById('toggleConfirmPassword').addEventListener('click', funct
 
 </script>
 <script>
-  function deleteProfile() {
-    if (confirm('Are you sure you want to delete your profile?')) {
-      fetch('<?= site_url("/tabs/deleteProfile") ?>', {
-        method: 'POST',
-        body: new FormData(), // send an empty form data if needed
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert('Profile deleted successfully!');
-          // Optionally, redirect or update UI
-        } else {
-          alert('Error deleting profile');
-        }
-      })
-      .catch(error => console.error('Error:', error));
-    }
+function deleteProfile() {
+  console.log('Delete profile initiated');
+  
+  if (confirm('Are you sure you want to delete your profile?')) {
+    console.log('User confirmed profile deletion');
+    
+    fetch('http://localhost/tumcathcom/public/index.php/tabs/deleteProfile', {
+      method: 'POST',
+      body: new FormData(), // send an empty form data if needed
+    })
+    .then(response => response.json())  // Assuming the server responds with JSON
+    .then(data => {
+      if (data.success) {
+        console.log('Profile deleted successfully');
+        // Redirect to login page after successful profile deletion
+        window.location.href = 'http://localhost/tumcathcom/public/index.php/auth/login';
+      } else {
+        console.log('Error deleting profile:', data.message);
+        // Handle the error case (optional)
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      console.log('Error occurred during profile deletion');
+    });
+  } else {
+    console.log('User canceled profile deletion');
   }
+}
+
+
+
 </script>
 <script>
     // Wait until the DOM is fully loaded

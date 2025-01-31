@@ -21,7 +21,7 @@ class AssetsModel extends Model
         'asset_condition',
         'booking_id',
         'phone',
-        'family',
+        'user_id',
         'location',
         'booked_by',
         'booking_start_date',
@@ -38,6 +38,29 @@ class AssetsModel extends Model
             return $assetsdata; // Return the user profile as an array
         }
 
+        return null; // If user not found, return null
+    }
+    public function getAllAssetsData($fullName)
+    {
+        // Fetch all records for the given user
+        $allassetsdata = $this->where('booked_by', $fullName)->findAll();
+    
+        // Return the result
+        return $allassetsdata;
+    }
+    public function countAssetsForBooking($bookingId)
+    {
+        return $this->where('booking_id', $bookingId)->countAllResults();
+    }
+    public function getAssetsbyId($bookingId)
+    {
+        // Fetch all columns from the user_profiles table for the given user_id
+        $assetsdata = $this->where('booking_id', $bookingId)->findAll();
+
+        // Check if the user profile exists
+        if ($assetsdata) {
+            return $assetsdata; // Return the user profile as an array
+        }
         return null; // If user not found, return null
     }
 }

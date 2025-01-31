@@ -136,11 +136,11 @@
                         <!--end::Col-->
                         <!--begin::Col-->
                         <div class="col-md-6">
-                          <label for="validationCustom04" class="form-label">Family/Jumuia</label>
-                          <select class="form-select" name="family" id="validationCustom04" required>
-                            <option value="<?=$family?>" selected><?=$family?></option>
+                          <label for="validationCustom04" class="form-label">User ID</label>
+                          <select class="form-select" name="family" id="validationCustom04" required readonly>
+                            <option value="<?=$userprofile['user_id']?>" selected><?=$userprofile['user_id']?></option>
                         </select>
-                          <div class="invalid-feedback">Please select a valid Jumuia.</div>
+                          <div class="invalid-feedback">Please select a valid ID.</div>
                         </div>
                         <!--end::Col-->
                         <div class="col-md-6">
@@ -150,7 +150,7 @@
                             name="booking_id"
                             class="form-control"
                             id="validationCustom01"
-                            value="<?=generateUserId()?>"
+                            value="<?=generateBookingId()?>"
                             readonly
                             required
                           />
@@ -295,23 +295,6 @@
                       
 
                         <!--end::Col-->
-
-                        <!--begin::Col-->
-                        <div class="col-12">
-                          <div class="form-check">
-                            <input
-                              class="form-check-input"
-                              type="checkbox"
-                              value=""
-                              id="invalidCheck"
-                              required
-                            />
-                            <label class="form-check-label" for="invalidCheck">
-                              I have agreed to Register for this Semester as per the TUMCATHCOM Constitution
-                            </label>
-                            <div class="invalid-feedback">You must agree before submitting.</div>
-                          </div>
-                        </div>
                         <input type="hidden" id="assetsInput" name="assetsData"> 
                         <!--end::Col-->
                       </div>
@@ -395,36 +378,45 @@
     // Configure styles and messages based on status
     switch (statusLower) {
       case 'pending':
-        statusDiv.style.backgroundColor = '#ffcc80'; // Orange
+        statusDiv.style.backgroundColor = '#e9ecef'; // Light gray
         statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#d35400';
-        icon.innerHTML = '&#128712;'; // Hourglass icon ⌛
+        statusDiv.style.color = '#495057';
+        icon.innerHTML = '&#128214;'; // Book icon 📖
         message.innerHTML = `
-          <strong>Pending Confirmation:</strong> Your registration is under confirmation. 
-          Please wait for approval and Communication from the Assets Manager.The Hiring Fee may incur.And if so, it will also be Communicated to you upon approval.
+          <strong>Check Your Booking History:</strong> For updates on your bookings, please visit the 
+          <a href="http://localhost/tumCathCom/public/index.php/tabs/booking-history" style="color: #007bff; text-decoration: underline;">
+            Booking History Tab
+          </a>.
         `;
+
         break;
 
       case 'approved':
-        statusDiv.style.backgroundColor = '#d4edda'; // Green
+        statusDiv.style.backgroundColor = '#e9ecef'; // Light gray
         statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#155724';
-        icon.innerHTML = '&#9989;'; // Checkmark ✅
+        statusDiv.style.color = '#495057';
+        icon.innerHTML = '&#128214;'; // Book icon 📖
         message.innerHTML = `
-          <strong>Approved:</strong> Your registration has been approved. Please wait for communication from the Assets Committee on how to reach out for the assets booked. You will also
-          be required to carry with yourself the booking form. Download it from the Booking History tab: 
-          <a href="<?php echo base_url('tabs/booking-history'); ?>">Download Form</a>.
+          <strong>Check Your Booking History:</strong> For updates on your bookings, please visit the 
+          <a href="http://localhost/tumCathCom/public/index.php/tabs/booking-history" style="color: #007bff; text-decoration: underline;">
+            Booking History Tab
+          </a>.
         `;
+
         break;
 
       case 'declined':
-        statusDiv.style.backgroundColor = '#f8d7da'; // Red
+        statusDiv.style.backgroundColor = '#e9ecef'; // Light gray
         statusDiv.style.border = '1px solid #ccc';
-        statusDiv.style.color = '#721c24';
-        icon.innerHTML = '&#10060;'; // Cross ❌
+        statusDiv.style.color = '#495057';
+        icon.innerHTML = '&#128214;'; // Book icon 📖
         message.innerHTML = `
-          <strong>Declined:</strong> Your registration has been declined. Please contact the Assets Office.
+          <strong>Check Your Booking History:</strong> For updates on your bookings, please visit the 
+          <a href="http://localhost/tumCathCom/public/index.php/tabs/booking-history" style="color: #007bff; text-decoration: underline;">
+            Booking History Tab
+          </a>.
         `;
+
         break;
 
       default:
@@ -443,7 +435,7 @@
     if (statusLower === 'pending' || statusLower === 'approved') {
       const submitButton = document.getElementById(submitButtonId);
       if (submitButton) {
-        submitButton.disabled = true;
+        submitButton.disabled = false;
       } else {
         console.error(`Submit button with ID '${submitButtonId}' not found.`);
       }
