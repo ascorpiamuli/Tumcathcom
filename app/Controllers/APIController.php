@@ -150,10 +150,44 @@ class APIController extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException("Image not found");
         }
     }
+    public function saveComment()
+    {
+        // Get JSON input instead of using getPost
+        $json = $this->request->getJSON(true);  // 'true' returns the decoded array
     
-
+        // Extract values from the JSON data
+        $reportId = $json['report_id'] ?? null;  // Use null coalescing operator to avoid undefined index
+        $comment = $json['comment'] ?? null;
     
+        // Log the incoming values for debugging
+        log_message('info', "Received Report ID: $reportId, Comment: $comment");
     
+        // Validate inputs
+        if (empty($reportId) || empty($comment)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Missing report ID or comment.']);
+        }
     
-
+        // Get the user ID from the session
+        $session = \Config\Services::session();
+        $userId = $session->get('user_id');
+    
+        if (!$userId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'User not logged in.']);
+        }
+    
+        // Load the model
+        $assetReportsModel = new \App\Models\AssetReportsModel();
+        
+        // Check if the user has already submitted a comment for this report
+        if ($assetReportsModel->hasCommented($reportId, $userId)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'You have already submitted a comment for this report.']);
+        }
+    
+        // Save the comment using the model method
+        if ($assetReportsModel->saveComment($reportId, $userId, $comment)) {
+            return $this->response->setJSON(['success' => true]);
+        } else {
+            return $this->response->setJSON(['success' => false, 'message' => 'Failed to save the comment.']);
+        }
+    }
 }

@@ -353,7 +353,7 @@ abstract class FormsImplementor extends BaseController implements Forms
             $image = \Config\Services::image()
                 ->withFile($profileImageName)
                 ->resize(160, 160, true)  // Resize and crop to 160x160
-                ->save(WRITEPATH . 'uploads/profile_images/' . $newProfileImage);
+                ->save(WRITEPATH .'uploads/profile_images/' . $newProfileImage);
 
             log_message('info', 'Profile image uploaded and resized: ' . $newProfileImage);
         } else {

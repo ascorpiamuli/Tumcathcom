@@ -158,13 +158,13 @@
             <!--begin::User Menu Dropdown-->
             <li class="nav-item dropdown user-menu ms-3">
               <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                <img src="<?= base_url('/index.php/uploads/' . (isset($userprofile['profile_image']) && !empty($userprofile['profile_image']) ? $userprofile['profile_image'] : '1738260327_3919d51d6c64721c08e7.jpg')); ?>" class="user-image rounded-circle shadow" alt="User Image">
-                <span class="d-none d-md-inline"><?=$fullName?></span>
+                <img src="<?= base_url('/index.php/uploads/' . (isset($userprofile['profile_image']) && !empty($userprofile['profile_image']) ? $userprofile['profile_image'] : 'default.webp')); ?>" class="user-image rounded-circle shadow" alt="User Image">
+                <span class="d-none d-md-inline"><?= isset($fullName) ? $fullName : 'Member' ?></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                 <li class="user-header text-bg-primary">
-                  <img src="<?= base_url('/index.php/uploads/' . (isset($userprofile['profile_image']) && !empty($userprofile['profile_image']) ? $userprofile['profile_image'] : '1738260327_3919d51d6c64721c08e7.jpg')); ?>" class="user-image rounded-circle shadow" alt="User Image">
-                  <p><?=$fullName?> - <?=$family?> <small> You Joined <?=$datelogged?></small></p>
+                  <img src="<?= base_url('/index.php/uploads/' . (isset($userprofile['profile_image']) && !empty($userprofile['profile_image']) ? $userprofile['profile_image'] : 'default.webp')); ?>" class="user-image rounded-circle shadow" alt="User Image">
+                  <p><?=isset($fullName) ? $fullName:'Member'?> - <?=isset($family) ?$family:'Null'?> <small> You Joined <?=isset($datelogged) ? $datelogged:'null'?></small></p>
                 </li>
                 <li class="user-footer">
                   <a href="<?=site_url('tabs/profile')?>" class="btn btn-default btn-flat">My Profile</a>
@@ -309,7 +309,7 @@
                 </a>
                 <ul class="nav nav-treeview">
                   <li class="nav-item">
-                    <a href="./UI/general.html" class="nav-link">
+                    <a href="<?=site_url('tabs/choir-registration')?>" class="nav-link">
                       <i class="nav-icon bi bi-circle"></i>
                       <p>Choir Registration</p>
                     </a>

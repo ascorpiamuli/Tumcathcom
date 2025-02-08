@@ -153,7 +153,6 @@ abstract class BaseController extends Controller
         $dancersdata = $this->liturgicalDancersModel->getDancersData($fullName);
         $serversdata = $this->liturgicalServersModel->getServersData($fullName);
         $catechistdata = $this->liturgicalCatechistModel->getCatechistData($fullName);
-
         $datelogged = $this->userProfileModel->getDateEnteredById($user_id);
         $userprofile = $this->userProfileModel->getUserProfileById($user_id);
         $family = $this->userProfileModel->getFamilyNamebyId($user_id);

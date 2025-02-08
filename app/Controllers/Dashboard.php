@@ -15,6 +15,7 @@ use App\Models\LiturgicalCatechistModel;
 use App\Models\SemesterRegistrationModel;
 use App\Models\AssetsModel;
 use App\Controllers\FormsImplementor;
+use App\Models\AssetReportsModel;
 
 // Handle profile image upload
 use CodeIgniter\Images\Image;
@@ -23,6 +24,7 @@ class Dashboard extends FormsImplementor
 {
     //Data Members(PROTECTED!!)
     protected $userProfileModel;
+    protected $assetReportsModel;
     protected $saintsModel;
     protected $userAuthModel;
     protected $prayerModel;
@@ -44,6 +46,7 @@ class Dashboard extends FormsImplementor
         $this->userProfileModel = new UserProfileModel();
         $this->saintsModel = new SaintsModel();
         $this->prayerModel = new PrayerModel();
+        $this->assetReportsModel=new AssetReportsModel();
         $this->rosaryModel=new RosaryModel();
         $this->liturgicalClassesModel=new LiturgicalClassesModel();
         $this->liturgicalDancersModel=new liturgicalDancersModel();
@@ -196,10 +199,10 @@ class Dashboard extends FormsImplementor
         $data = $this->getCommonData('Prayers');
         return view('tabs/prayers', $data);
     }
-    public function choir()
+    public function choirRegistration()
     {
         $data = $this->getCommonData('Choir');
-        return view('tabs/choir', $data);
+        return view('tabs/choir-registration', $data);
     }
     public function profile()
     {
@@ -236,15 +239,10 @@ class Dashboard extends FormsImplementor
     {
         // Fetch common data, including the user's full name
         $data = $this->getCommonData('Assets Report');  
-        $userId = $data['userprofile']['user_id'];
         // Fetch all assets booked by the user
-        $allassetsdata = $this->assetsModel->where('user_id', $userId)->findAll(); 
-        // Add assets count to each booking
-        foreach ($allassetsdata as &$booking) {
-            $assetsCount = $this->assetsModel->countAssetsForBooking($booking['booking_id']);
-            $booking['assets_count'] = $assetsCount !== null ? $assetsCount : 0; // Ensure we set a valid count
-        }    
-        return view('tabs/assets_report', ['allassetsdata' => $allassetsdata] + $data);
+        $allreportsdata = $this->assetReportsModel->getAllReports(); 
+        // Add assets count to each booking 
+        return view('tabs/assets_report', ['allreportsdata' => $allreportsdata] + $data);
     }
 
     public function readings()
@@ -318,7 +316,7 @@ class Dashboard extends FormsImplementor
     {
         $data = $this->getCommonData('Welfare');
         return view('tabs/welfare', $data);
-    }
+    } 
     public function deleteProfile()
     {
         $userId = session()->get('user_id');  // Assuming the user ID is stored in session

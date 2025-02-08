@@ -41,87 +41,87 @@
                   <th style="width: 30%;">Actions</th>
                 </tr>
               </thead>
-              <tbody>
-                    <?php 
-                        $renderedBookingIds = []; // Array to keep track of rendered booking IDs
-                        $counter = 1; // Initialize the counter
+                <tbody>
+                <?php 
+                    $renderedBookingIds = []; // Array to keep track of rendered booking IDs
+                    $counter = 1; // Initialize the counter
 
-                        foreach ($allassetsdata as $booking): 
-                            // Check if the booking ID has already been rendered
-                            if (in_array($booking['booking_id'], $renderedBookingIds)) {
-                                continue; // Skip rendering this row if it has already been rendered
+                    foreach ($allassetsdata as $booking): 
+                        // Check if the booking ID has already been rendered
+                        if (in_array($booking['booking_id'], $renderedBookingIds)) {
+                            continue; // Skip rendering this row if it has already been rendered
+                        }
+
+                        // Add the booking ID to the array to mark it as rendered
+                        $renderedBookingIds[] = $booking['booking_id'];
+                    ?>
+
+                    <tr class="align-middle">
+                        <td><?= $counter++ ?>.</td> <!-- Use the counter variable -->
+                        <td>
+                            <span class="booking-id" title="<?= htmlspecialchars($booking['booking_id']) ?>">
+                                <?= substr(htmlspecialchars($booking['booking_id']), 0, 10) . (strlen($booking['booking_id']) > 10 ? '...' : '') ?>
+                            </span>
+                            <i class="bi bi-clipboard" style="cursor: pointer;" onclick="copyBookingID('<?= htmlspecialchars($booking['booking_id']) ?>')"></i>
+                        </td>
+                        <td><?= htmlspecialchars($booking['assets_count']) ?></td>
+                        <td><?= htmlspecialchars($booking['location']) ?></td>
+                        <td><?= htmlspecialchars($booking['booking_start_date']) ?></td>
+                        <td><?= htmlspecialchars($booking['booking_end_date']) ?></td>
+                        <td>
+                        <?php
+                            $status = strtolower(htmlspecialchars($booking['booking_status']));
+                            $badgeClass = 'badge ';
+                            switch ($status) {
+                                case 'pending':
+                                    $badgeClass .= 'text-bg-warning';
+                                    break;
+                                case 'declined':
+                                    $badgeClass .= 'text-bg-danger';
+                                    break;
+                                case 'approved':
+                                    $badgeClass .= 'text-bg-success';
+                                    break;
+                                case 'cancelled':
+                                    $badgeClass .= 'text-bg-secondary';
+                                    break;
+                                default:
+                                    $badgeClass .= 'text-bg-info';
                             }
-
-                            // Add the booking ID to the array to mark it as rendered
-                            $renderedBookingIds[] = $booking['booking_id'];
                         ?>
+                        <span class="<?= $badgeClass ?>"><?= ucfirst($status) ?></span>
+                        </td>
+                        <td>
+                        <div style="white-space: nowrap; display: flex; gap: 5px;">
+                            <button class="btn btn-info btn-sm download-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">Download</button>
+                            <button class="btn btn-secondary btn-sm view-assets-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">View Assets</button>
+                            <button class="btn btn-danger btn-sm cancel-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">Cancel Booking</button>
+                        </div>
+                        </td>
+                    </tr>
 
-                        <tr class="align-middle">
-                            <td><?= $counter++ ?>.</td> <!-- Use the counter variable -->
-                            <td>
-                                <span class="booking-id" title="<?= htmlspecialchars($booking['booking_id']) ?>">
-                                    <?= substr(htmlspecialchars($booking['booking_id']), 0, 10) . (strlen($booking['booking_id']) > 10 ? '...' : '') ?>
-                                </span>
-                                <i class="bi bi-clipboard" style="cursor: pointer;" onclick="copyBookingID('<?= htmlspecialchars($booking['booking_id']) ?>')"></i>
-                            </td>
-                            <td><?= htmlspecialchars($booking['assets_count']) ?></td>
-                            <td><?= htmlspecialchars($booking['location']) ?></td>
-                            <td><?= htmlspecialchars($booking['booking_start_date']) ?></td>
-                            <td><?= htmlspecialchars($booking['booking_end_date']) ?></td>
-                            <td>
-                            <?php
-                                $status = strtolower(htmlspecialchars($booking['booking_status']));
-                                $badgeClass = 'badge ';
-                                switch ($status) {
-                                    case 'pending':
-                                        $badgeClass .= 'text-bg-warning';
-                                        break;
-                                    case 'declined':
-                                        $badgeClass .= 'text-bg-danger';
-                                        break;
-                                    case 'approved':
-                                        $badgeClass .= 'text-bg-success';
-                                        break;
-                                    case 'cancelled':
-                                        $badgeClass .= 'text-bg-secondary';
-                                        break;
-                                    default:
-                                        $badgeClass .= 'text-bg-info';
-                                }
-                            ?>
-                            <span class="<?= $badgeClass ?>"><?= ucfirst($status) ?></span>
-                            </td>
-                            <td>
-                            <div style="white-space: nowrap; display: flex; gap: 5px;">
-                                <button class="btn btn-info btn-sm download-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">Download</button>
-                                <button class="btn btn-secondary btn-sm view-assets-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">View Assets</button>
-                                <button class="btn btn-danger btn-sm cancel-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">Cancel Booking</button>
-                            </div>
-                            </td>
-                        </tr>
-
-                        <!-- Hidden row for asset details -->
-                        <tr class="assets-details" id="assets-details-<?= $booking['booking_id'] ?>" style="display: none;">
-                            <td colspan="8">
-                            <!-- Here, you can display assets details in a table or other format -->
-                            <div>
-                                <h5>Assets for Booking ID: <?= htmlspecialchars($booking['booking_id']) ?></h5>
-                                <!-- Replace with real asset data -->
-                                <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                    <th>Asset Name</th>
-                                    <th>Asset Type</th>
-                                    <th>Asset Quantity</th>
-                                    <th>Asset Status</th>
-                                    </tr>
-                                </thead>
-                                </table>
-                            </div>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
+                    <!-- Hidden row for asset details -->
+                    <tr class="assets-details" id="assets-details-<?= $booking['booking_id'] ?>" style="display: none;">
+                        <td colspan="8">
+                        <!-- Here, you can display assets details in a table or other format -->
+                        <div>
+                            <h5>Assets for Booking ID: <?= htmlspecialchars($booking['booking_id']) ?></h5>
+                            <!-- Replace with real asset data -->
+                            <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                <th>Asset Name</th>
+                                <th>Asset Type</th>
+                                <th>Asset Quantity</th>
+                                <th>Asset Status</th>
+                                </tr>
+                            </thead>
+                            </table>
+                        </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                </tbody>
 
             </table>
             <footer class= "float-center text-center">

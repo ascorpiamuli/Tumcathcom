@@ -11,53 +11,50 @@ $routes->get('/', 'Auth::login');
 
 // Authentication routes
 $routes->group('auth', function($routes) {
-    $routes->get('login', 'Auth::login');
-    $routes->post('login', 'Auth::login');
     $routes->get('register', 'Auth::register');
     $routes->post('register', 'Auth::register');
+    $routes->get('login', 'Auth::login');
+    $routes->post('login', 'Auth::login');
     $routes->get('authentication', 'Auth::authentication');
     $routes->post('authentication', 'Auth::authentication');
     $routes->get('forgot_password', 'Auth::forgotPassword');
     $routes->get('logout', 'Auth::logout');
     
 });
+// Admin Authentication routes
+$routes->group('auth/admin', function($routes) {
+    $routes->get('login', 'Admin\AdminAuth::login');
+    $routes->post('login', 'Admin\AdminAuth::login');
+    $routes->get('register', 'Admin\AdminAuth::register');
+    $routes->post('register', 'Admin\AdminAuth::register');
+    $routes->get('forgot_password', 'Admin\AdminAuth::forgotPassword');
+    $routes->get('logout', 'Admin\AdminAuth::logout');
+    
+});
 
 // Dashboard Routes
 $routes->group('tabs', function($routes) {
-    // Default Dashboard route
+    $routes->get('register', 'Auth::register');
+    $routes->post('register', 'Auth::register');
     $routes->get('dashboard', 'Dashboard::index');
     $routes->get('profile','Dashboard::profile');
     $routes->post('profile','Dashboard::profile');
-    // Family/Jumuia routes
     $routes->get('family', 'Dashboard::family_jumuia');
     $routes->get('semester-registration', 'Dashboard::semester_registration');
-    $routes->post('semester-registration', 'Dashboard::semester_registration'); // Add this line
+    $routes->post('semester-registration', 'Dashboard::semester_registration'); 
     $routes->get('prayers_novena', 'Dashboard::prayers_novena');
-
-    // TUMCathCom Reports
     $routes->get('assets', 'Dashboard::assets');
     $routes->post('assets', 'Dashboard::assets');
     $routes->get('treasury_report', 'Dashboard::treasury_report');
     $routes->get('assets_report', 'Dashboard::assets_report');
     $routes->get('booking-history', 'Dashboard::bookingHistory');
-
-    // Liturgy routes
-    
     $routes->get('prayers', 'Dashboard::prayers');
-
-    $routes->get('choir', 'Dashboard::choir');
+    $routes->get('choir-registration', 'Dashboard::choirRegistration');
     $routes->get('readings', 'Dashboard::readings');
-
-
-    // Events and Settings
     $routes->get('events', 'Dashboard::events');
     $routes->get('settings', 'Dashboard::settings');
-    
-    // Help and Suggestion Box
     $routes->get('help', 'Dashboard::help');
     $routes->get('suggestion', 'Dashboard::suggestion');
-    
-    // Welfare
     $routes->get('welfare', 'Dashboard::welfare');
     $routes->get('liturgical_classes', 'Dashboard::liturgical_classes');
     $routes->post('liturgical_classes', 'Dashboard::liturgical_classes');
@@ -73,4 +70,7 @@ $routes->get('/saveMysteries', 'Scraper::saveMysteriesOfTheRosary');
 $routes->get('import-calendar', 'CatholicCalendarController::importCalendar');
 $routes->get('getAssets/(:any)', 'APIController::getAssetsbyId/$1');
 $routes->get('/uploads/(:any)', 'APIController::showProfileImage/$1');
+$routes->post('/save-comment', 'APIController::saveComment');
+
+
 

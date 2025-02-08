@@ -9,6 +9,13 @@ use App\Controllers\BaseController;
 
 class Auth extends BaseController
 {
+    public $userAuthModel;
+    public $userProfileModel;
+    public  function _construct(){
+
+        $this->$userAuthModel=new UserAuthenticationModel;
+        $this->$userProfileModel=new UserProfileModel;
+    }
      // Authentication and Registration Flow
     public function index()
     {
@@ -91,7 +98,7 @@ class Auth extends BaseController
         }
     
         // If the form is not submitted, display the authentication page
-        return view('auth/authentication');
+        return view('auth/login');
     }
     
 
@@ -99,7 +106,7 @@ class Auth extends BaseController
     {
         $userId = session()->get('user_id');
         if (!$userId) {
-            return redirect()->to('/auth/authentication');
+            return redirect()->to('/auth/login');
         }
     
         if ($this->request->getMethod() == 'POST') {
@@ -148,7 +155,7 @@ class Auth extends BaseController
     
             if (!$validFamily) {
                 session()->setFlashdata('error', 'Please select a valid family name From the Dropdown.');
-                return redirect()->to('/auth/register');
+                return redirect()->to('/tabs/register');
             }
     
             if ($userProfileModel->save($data)) {
@@ -158,24 +165,24 @@ class Auth extends BaseController
                 session()->setFlashdata('error', 'Failed to save Profile data.');
                 return redirect()->back();
             }
+          log_message('info',json_decode($data));
         }
-    
-        return view('auth/register');
+        return view('tabs/register');
     }
     
     // Login Method
     public function login()
     {
         if ($this->request->getMethod() == 'POST') {
-            $username = $this->request->getPost('username');
+            $email= $this->request->getPost('email');
             $password = $this->request->getPost('password');
     
             $userAuthModel = new UserAuthenticationModel();
-            $user = $userAuthModel->select('user_id, password')->where('username', $username)->first();
+            $user = $userAuthModel->select('user_id, password')->where('email', $email)->first();
     
             if ($user && password_verify($password, $user['password'])) {
                 // Log successful login
-                log_message('info', "User with username '{$username}' logged in successfully. User ID: {$user['user_id']}");
+                log_message('info', "User with email '{$email}' logged in successfully. User ID: {$user['user_id']}");
     
                 // Check if user profile exists
                 $userProfileModel = new UserProfileModel();
@@ -213,9 +220,9 @@ class Auth extends BaseController
                 return redirect()->to('/tabs/dashboard');
             } else {
                 // Log failed login attempt
-                log_message('warning', "Failed login attempt for username '{$username}'");
+                log_message('warning', "Failed login attempt for email '{$email}'");
     
-                session()->setFlashdata('error', 'Invalid Credentials. Try Again');
+                session()->setFlashdata('error', 'Invalid Email or Password.Try Again');
                 return redirect()->to('/auth/login');
             }
         }
