@@ -31,6 +31,10 @@ $routes->group('auth/admin', function($routes) {
     $routes->get('logout', 'Admin\AdminAuth::logout');
     
 });
+// Dashboard Routes
+$routes->group('admin/', function($routes) {
+    $routes->get('dashboard', 'Admin\AdminDashboard::index');;
+});
 
 // Dashboard Routes
 $routes->group('tabs', function($routes) {

@@ -59,6 +59,24 @@ function generateBookingId() {
     return $bookingId;
 }
 
+if (!function_exists('generate_admin_id')) {
+    function generate_departmental_id($position)
+    {
+        // Extract the first three letters and convert to uppercase
+        $prefix = strtoupper(substr($position, 0, 3));
+
+        // Generate a random 4-digit number
+        $random_number = rand(1000, 9999);
+
+        // Get the current year
+        $year = date('Y');
+
+        // Format the ID as "ABC-1234/2025"
+        return "{$prefix}-{$random_number}/{$year}";
+    }
+}
+
+
 
 
 

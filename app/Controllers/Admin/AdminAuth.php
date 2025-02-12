@@ -11,10 +11,12 @@ use App\Models\AdminAuthenticationModel;
 
 class AdminAuth extends Auth
 {
-    public $adminAuthModel;
+    public $adminAuthModel;   
+
 
     public function __construct() {
-        $this->adminAuthModel = new AdminAuthenticationModel;
+        parent::__construct(); // Explicitly call the parent constructor
+        $this->adminAuthModel = new AdminAuthenticationModel();
     }
      // Authentication and Registration Flow
     public function index()
@@ -32,27 +34,16 @@ class AdminAuth extends Auth
         if ($this->request->getMethod() == 'POST') {
             $departmentcode = $this->request->getPost('deptcode');
             $password = $this->request->getPost('password');
-            $adminuser = $this->adminAuthModel->select('department_code, password')->where('department_code', $departmentcode)->first();
+            $adminuser = $this->adminAuthModel
+            ->select('admin_id, departmental_id, password')
+            ->where('departmental_id', $departmentcode)
+            ->first();
+        
     
             if ($adminuser && password_verify($password, $adminuser['password'])) {
-                // Log successful login
-                log_message('info', "User Admin with dept code'{$departmentcode}' logged in successfully. User ID: {$adminuser['admin_id']}");
-    
-                // Check if admin had a member account before getting to admin
-                $userAuth = $this->userAuthModel->where('user_id', $adminuser['admin_id'])->first();
-                if (!$userAuth) {
-                    // Log if auth data is missing
-                    log_message('warning', "Auth Data missing for user ID: {$adminuser['admin_id']}");
-    
-                    // Redirect to login if auth data is missing
-                    session()->setFlashdata('info', 'You need to have Created a Member Account First to get to Admin.');
-                    return redirect()->to('/auth/login');
-                }
     
                 // Generate session token
                 $sessionToken = generateSessionToken();
-                log_message('info', "Token Generated for user ID: {$adminuser['admin_id']} - Session Token: {$sessionToken}");
-    
                 // Update the session token in the database
                 $updateStatus = $this->adminAuthModel->updateSessionToken($adminuser['admin_id'], $sessionToken);
                 if (!$updateStatus) {
@@ -61,16 +52,15 @@ class AdminAuth extends Auth
                     return redirect()->to('/auth/login');
                 }
     
-                // Set the session with the token
-                session()->set('user_id', $adminuser['admin_id']);
-                session()->set('session_token', $sessionToken);
+                session()->set('admin_id', $adminuser['admin_id']);
+                session()->set('admin_session_token', $sessionToken);
     
                 // Log the successful session creation
-                log_message('info', "Session set for admin ID: {$uadminser['admin_id']} with session token: {$sessionToken}");
+                log_message('info', "Session set for admin ID: {$adminuser['admin_id']} with session token: {$sessionToken}");
     
                 // Set flash data and redirect to dashboard
                 session()->setFlashdata('success', 'Great Work! Logged in');
-                return redirect()->to('/tabs/dashboard');
+                return redirect()->to('/admin/dashboard');
             } else {
                 // Log failed login attempt
                 log_message('warning', "Failed login attempt for username");
@@ -86,13 +76,45 @@ class AdminAuth extends Auth
 
     public function register()
     {
-        $data = $this->getCommonData('Admin Register'); // Assuming this returns an array
-        if ($this->request->getMethod()=='POST') {
-            
+        
+        if ($this->request->getMethod() == 'POST') {
+            $position = $this->request->getPost('position');
+            $email = $this->request->getPost('email');
+            $password = $this->request->getPost('password');
+    
+            // Check if user exists in members table
+            $member = $this->userAuthModel->where('email', $email)->first();
+    
+            if (!$member) {
+                session()->setFlashdata('info', 'You must register a member account first.');
+                return redirect()->to('/auth/login');
+            }
+    
+            // Generate Admin ID and Departmental ID
+            $adminId = $member['user_id'];
+            $departmentalId = generate_departmental_id($position);
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            // Prepare admin data
+            $adminData = [
+                'position'       =>$position,
+                'admin_id'        => $adminId,
+                'departmental_id' => $departmentalId,
+                'admin_email'     => $email,
+                'password'        => $hashedPassword,
+                'session_token'   => generateSessionToken()
+            ];
+    
+            // Save to database
+            $this->adminAuthModel->insert($adminData);
+    
+            session()->setFlashdata('success', 'Registration successful. Welcome!');
+            return redirect()->to('/admin/dashboard');
         }
     
-        return view('auth/admin/register'); // This line is correct
+        return view('auth/admin/login'); 
     }
+    
+    
     
 
     

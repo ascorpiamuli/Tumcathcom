@@ -11,10 +11,10 @@ class Auth extends BaseController
 {
     public $userAuthModel;
     public $userProfileModel;
-    public  function _construct(){
+    public  function __construct(){
 
-        $this->$userAuthModel=new UserAuthenticationModel;
-        $this->$userProfileModel=new UserProfileModel;
+        $this->userAuthModel=new UserAuthenticationModel;
+        $this->userProfileModel=new UserProfileModel;
     }
      // Authentication and Registration Flow
     public function index()
@@ -207,10 +207,9 @@ class Auth extends BaseController
                     session()->setFlashdata('error', 'Failed to log you in. Try again later.');
                     return redirect()->to('/auth/login');
                 }
-    
-                // Set the session with the token
                 session()->set('user_id', $user['user_id']);
-                session()->set('session_token', $sessionToken);
+                session()->set('user_session_token', $sessionToken);
+                
     
                 // Log the successful session creation
                 log_message('info', "Session set for user ID: {$user['user_id']} with session token: {$sessionToken}");
@@ -241,29 +240,48 @@ class Auth extends BaseController
     }
     public function logout()
     {
-        // Get the current user's ID and session token
-        $userId = session()->get('user_id');
-        $sessionToken = session()->get('session_token');
+        // Start session
+        $session = session();
+    
+        // Determine user type and get the correct ID
+        if ($session->has('admin_id')) {
+            $userId = $session->get('admin_id');
+            $userType = 'admin';
+            $authModel = new \App\Models\AdminAuthenticationModel(); // Admin model
+        } elseif ($session->has('user_id')) {
+            $userId = $session->get('user_id');
+            $userType = 'user';
+            $authModel = new \App\Models\UserAuthenticationModel(); // User model
+        } else {
+            log_message('error', "Logout attempt failed - No valid session found.");
+            return redirect()->to('/auth/login');
+        }
     
         // Log logout attempt
-        log_message('info', "User with ID {$userId} is logging out");
+        log_message('info', "{$userType} with ID {$userId} is logging out");
     
         // Set a flash message for successful logout
         session()->setFlashdata('success', 'Successfully Logged Out.');
     
-        // Remove the session token from the database for the current user
-        $userAuthModel = new UserAuthenticationModel();
-        $userAuthModel->update($userId, ['session_token' => null]);
+        // Remove the session token from the database (Only if user ID exists)
+        if (!empty($userId)) { 
+            $authModel->where('id', $userId)->set(['session_token' => null])->update();
+        } else {
+            log_message('error', "Logout attempt failed - {$userType} ID is missing.");
+        }
     
         // Remove session data from the browser session
-        session()->remove('user_id');
-        session()->remove('session_token');
+        $session->remove(['user_id', 'admin_id', 'session_token', 'user_type']);
     
         // Log out event
-        log_message('info', "User with ID {$userId} logged out successfully");
+        log_message('info', "{$userType} with ID {$userId} logged out successfully");
+        
     
-        // Redirect to login page
-        return redirect()->to('/auth/login');
+        // Redirect to the appropriate login page
+        return ($userType === 'admin') 
+            ? redirect()->to('/auth/admin/login') 
+            : redirect()->to('/auth/login');
     }
+    
     
 }

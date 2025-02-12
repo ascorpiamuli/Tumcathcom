@@ -58,11 +58,20 @@
                         <!--end::Col-->
                         <!--begin::Col-->
                         <div class="col-md-6">
-                            <label for="validationCustom04" class="form-label">Year of Study</label>
-                            <input type="number" name="year_of_study" placeholder="Enter Year of Study" class="form-control" id="validationCustom04" />
-                            <div class="valid-feedback">Looks good!</div>
+                            <label for="validationCustom08" class="form-label">Year of Study</label>
+                            <select name="year_of_study" class="form-control" id="validationCustom08">
+                                <option value="" selected disabled>Select Year</option>
+                                <option value="1">First Year</option>
+                                <option value="2">Year 2</option>
+                                <option value="3">Year 3</option>
+                                <option value="4">Year 4</option>
+                                <option value="5">Year 5</option>
+                                <option value="G">Graduate</option>
+                            </select>
+                            <div class="invalid-feedback">This field is required.</div>
                         </div>
-                        <!--begin::Col-->
+                        <!--end::Col-->
+                          <!--begin::Col-->
                         <div class="col-md-6">
                             <label for="validationCustom06" class="form-label">Registration Number</label>
                             <div class="input-group has-validation">

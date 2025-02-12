@@ -1,189 +1,195 @@
+<?php
+    $successMessage = session()->getFlashdata('success');
+    $errorMessage = session()->getFlashdata('error');
+    $infoMessage = session()->getFlashdata('info');
+    $errorMessages = session()->getFlashdata('errors')
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Authentication</title>
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
     <style>
-    /* Basic styles for flash messages */
-    .alert {
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 15px;
-        display: none;
-        position: fixed;
-        top: 20px;
-        right: -100%;  /* Initially off-screen to the right */
-        width: 80%;
-        max-width: 400px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        font-family: 'Arial', sans-serif;
-        transition: right 1s ease, opacity 1s ease;  /* Transition for slide and fade */
-        opacity: 0;  /* Initially invisible */
-        z-index: 9999;
-    }
-
-    .alert .close {
-        background: none;
-        border: none;
-        font-size: 20px;
-        color: #000;
-        position: absolute;
-        top: 5px;
-        right: 10px;
-        cursor: pointer;
-    }
-
-    .alert i {
-        margin-right: 8px;
-        font-size: 18px;
-    }
-
-    .alert-danger {
-        background-color: rgba(248, 215, 218, 0.9); /* Red with some transparency */
-        color: #721c24;
-        border-left: 5px solid #f5c6cb;
-    }
-
-    .alert-success {
-        background-color: rgba(212, 237, 218, 0.9); /* Green with some transparency */
-        color: #155724;
-        border-left: 5px solid #c3e6cb;
-    }
-
-    .alert-info {
-        background-color: rgba(209, 236, 241, 0.9); /* Blue with some transparency */
-        color: #0c5460;
-        border-left: 5px solid #bee5eb;
-    }
-
-
-
-        /* Icon styles */
-        .icon-success {
-            color: #28a745;
+        /* Modal background overlay */
+        .modal {
+            display: flex;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevent scrolling */
+            background-color: rgba(0, 0, 0, 0.3); /* Transparent background */
         }
 
-        .icon-error {
-            color: #dc3545;
+        /* Hide modal if there is no flash message */
+        .hidden {
+            display: none !important;
         }
 
-        .icon-info {
-            color: #17a2b8;
+        /* Modal Content */
+        .modal-content {
+            padding: 20px;
+            border-radius: 12px;
+            width: 380px;
+            text-align: center;
+            color: white;
+            position: relative;
+            backdrop-filter: blur(10px); /* Glass effect */
+            opacity: 0.9;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transform: translateX(-100vw); /* Start position (off-screen left) */
+            animation: slideIn 1.4s ease-out forwards, slideOut 0.5s ease-in 2s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100vw);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(100vw);
+            }
+        }
+
+        /* Modal color themes */
+        .modal-success { background-color: rgba(40, 167, 69, 0.8); }
+        .modal-error { background-color: rgba(220, 53, 69, 0.8); }
+        .modal-info { background-color: rgba(23, 162, 184, 0.8); }
+
+        /* Icon container */
+        .icon-container {
+            margin: 15px auto;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            font-size: 22px;
+            border: none;
+            background: none;
+            color: white;
+        }
+
+        .close-btn:hover {
+            color: #ddd;
         }
     </style>
 </head>
 <body>
 
-<?php if (session()->getFlashdata('error')): ?>
-    <div class="alert alert-danger fade" id="error-message">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-        <i class="fa-solid fa-circle-exclamation icon-error"></i>
-        <?= esc(session()->getFlashdata('error')) ?>
+<!-- Show modal only if there is a flash message -->
+<?php if ($successMessage || $errorMessage || $infoMessage || $errorMessages): ?>
+    <div id="alertModal" class="modal">
+        <div id="alertBox" class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <div id="icon-container" class="icon-container"></div>
+            <h2 id="alertTitle"></h2>
+            <p id="alertMessage"></p>
+        </div>
     </div>
 <?php endif; ?>
 
-<?php if (session()->getFlashdata('errors')): ?>
-    <div class="alert alert-danger fade" id="errors-message">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-        <i class="fa-solid fa-circle-exclamation icon-error"></i>
-        <ul id="error-list">
-            <?php
-                $errors = session()->getFlashdata('errors');
-                if (!empty($errors)) {
-                    foreach ($errors as $error) {
-                        echo '<li>' . esc($error) . '</li>';
-                    }
-                }
-            ?>
-        </ul>
-    </div>
-<?php endif; ?>
-
-<?php if (session()->getFlashdata('success')): ?>
-    <div class="alert alert-success fade" id="success-message">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-        <i class="fa-solid fa-circle-check icon-success"></i>
-        <?= esc(session()->getFlashdata('success')) ?>
-    </div>
-<?php endif; ?>
-
-<?php if (session()->getFlashdata('info')): ?>
-    <div class="alert alert-info fade" id="info-message">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>
-        <i class="fa-solid fa-circle-info icon-info"></i>
-        <?= esc(session()->getFlashdata('info')) ?>
-    </div>
-<?php endif; ?>
-
-<!-- JavaScript to handle the swipe-in and fade-out -->
+<!-- JavaScript for Modal -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const showMessage = (elementId) => {
-            const message = document.getElementById(elementId);
-            if (message) {
-                message.style.display = 'block';  // Make the message visible
-                setTimeout(() => {
-                    message.style.right = '20px';  // Move the message from right to the screen
-                    message.style.opacity = 1;  // Make it fully opaque
-                }, 100); // Delay to trigger transition
-            }
-        };
+    function showAlert(type, title, message) {
+        if (!message || message.trim() === "") return;
 
-        const hideMessage = (elementId, delay = 5000) => {
-            setTimeout(() => {
-                const message = document.getElementById(elementId);
-                if (message) {
-                    message.style.right = '-100%';  // Move the message off-screen to the right
-                    message.style.opacity = 0;  // Make it invisible
-                    setTimeout(() => {
-                        message.style.display = 'none';  // Hide the message after fade-out
-                    }, 1000); // Wait for fade-out to complete before hiding (longer for smoother transition)
-                }
-            }, delay); // Delay before hiding the message (default 5 seconds)
-        };
+        let modal = document.getElementById('alertModal');
+        let alertBox = document.getElementById('alertBox');
+        let iconContainer = document.getElementById('icon-container');
+        let alertTitle = document.getElementById('alertTitle');
+        let alertMessage = document.getElementById('alertMessage');
 
-        const closeMessage = (event) => {
-            const message = event.target.closest('.alert');
-            if (message) {
-                message.style.right = '-100%';  // Move the message off-screen to the right
-                message.style.opacity = 0;  // Fade it out
-                setTimeout(() => {
-                    message.style.display = 'none';  // Hide the message after fade-out
-                }, 1000); // Wait for fade-out to complete before hiding
-            }
-        };
+        alertTitle.innerText = title;
+        alertMessage.innerText = message;
 
-        document.querySelectorAll('.close').forEach(button => {
-            button.addEventListener('click', closeMessage);
-        });
+        let iconHTML = '';
 
-        // Show the messages if they exist
-        if (document.getElementById('error-message')) {
-            showMessage('error-message');
-            hideMessage('error-message');
+        if (type === "success") {
+            alertBox.className = "modal-content modal-success";
+            iconHTML = `
+                <svg width="80" height="80" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="55" stroke="white" stroke-width="5" fill="none"/>
+                    <polyline points="30,60 50,80 90,40" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            `;
+        } else if (type === "error") {
+            alertBox.className = "modal-content modal-error";
+            iconHTML = `
+                <svg width="80" height="80" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="55" stroke="white" stroke-width="5" fill="none"/>
+                    <line x1="40" y1="40" x2="80" y2="80" stroke="white" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="80" y1="40" x2="40" y2="80" stroke="white" stroke-width="6" stroke-linecap="round"/>
+                </svg>
+            `;
+        } else if (type === "errors") {
+            alertBox.className = "modal-content modal-error";
+            iconHTML = `
+                <svg width="80" height="80" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="55" stroke="white" stroke-width="5" fill="none"/>
+                    <line x1="40" y1="40" x2="80" y2="80" stroke="white" stroke-width="6" stroke-linecap="round"/>
+                    <line x1="80" y1="40" x2="40" y2="80" stroke="white" stroke-width="6" stroke-linecap="round"/>
+                </svg>
+            `;
+        } else {
+            alertBox.className = "modal-content modal-info";
+            iconHTML = '<i class="fa-solid fa-circle-info" style="font-size: 50px;"></i>';
         }
 
-        if (document.getElementById('errors-message')) {
-            showMessage('errors-message');
-            hideMessage('errors-message');
-        }
+        iconContainer.innerHTML = iconHTML;
 
-        if (document.getElementById('success-message')) {
-            showMessage('success-message');
-            hideMessage('success-message');
-        }
+        modal.classList.remove("hidden");
+        setTimeout(closeModal, 2500);
+    }
 
-        if (document.getElementById('info-message')) {
-            showMessage('info-message');
-            hideMessage('info-message');
-        }
+    function closeModal() {
+        let modal = document.getElementById('alertModal');
+        if (modal) modal.remove();
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        <?php if ($successMessage): ?>
+            showAlert("success", "Success", "<?= esc($successMessage) ?>");
+        <?php endif; ?>
+
+        <?php if ($errorMessage): ?>
+            showAlert("error", "Error", "<?= esc($errorMessage) ?>");
+        <?php endif; ?>
+        <?php if (!empty($errorMessages)): ?>
+            <?php foreach ($errorMessages as $error => $message): ?>
+                showAlert("error", "Error", "<?= esc($message) ?>");
+            <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if ($infoMessage): ?>
+            showAlert("info", "Information", "<?= esc($infoMessage) ?>");
+        <?php endif; ?>
     });
 </script>
-
 
 </body>
 </html>

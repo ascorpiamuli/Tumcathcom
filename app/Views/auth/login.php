@@ -63,7 +63,7 @@
             transition: 0.3s;
         }
         .btn-custom:hover {
-            background-color: #53147a;
+            background-color:rgb(31, 44, 231);
             transform: scale(1.05);
         }
         .toggle-form {
@@ -98,13 +98,13 @@
         }
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            50% { transform: translateY(-20px); }
         }
     </style>
 </head>
 <body>
     <div class="container">
-    <?= view('partials/messages') ?>
+    
         <div class="card p-4 form-container form-login" id="form-container">
             <div class="cross-icon"><i class="fas fa-cross"></i></div>
             <img src="<?= base_url('/assets/images/cathcomlogo.jpg') ?>" alt="Logo" class="logo">
@@ -139,7 +139,7 @@
                 let baseUrl = "<?=site_url()?>";
 
                 // Toggle action and title
-                form.setAttribute("action", isLogin ? baseUrl + "/auth/authentication" : baseUrl + "auth/login");
+                form.setAttribute("action", isLogin ? baseUrl + "/auth/authentication" : baseUrl + "/auth/login");
                 form.setAttribute("method", "POST"); // Ensure POST method is set
                 title.innerText = isLogin ? "Member Registration" : "Member Login";
 

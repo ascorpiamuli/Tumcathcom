@@ -13,10 +13,15 @@ if (!function_exists('setUserSession')) {
         session()->set(['user_id' => $userId, 'session_token' => $sessionToken]);
     }
 }
-
 if (!function_exists('validateSessionToken')) {
-    // Validate the session token by checking if it exists in the database
-    function validateSessionToken($sessionToken, $userAuthModel) {
-        return $userAuthModel->where('session_token', $sessionToken)->first();
+    function validateSessionToken($sessionToken, $userType) {
+        if ($userType === 'admin') {
+            $model = new \App\Models\AdminAuthenticationModel();
+        } else {
+            $model = new \App\Models\UserAuthenticationModel();
+        }
+
+        return $model->where('session_token', $sessionToken)->first();
     }
 }
+

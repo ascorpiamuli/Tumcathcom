@@ -89,10 +89,11 @@
 </head>
 <body>
     <div class="container">
+    <?= view('partials/messages') ?>
         <div class="card p-4">
             <div class="cross-icon"><i class="fas fa-cross"></i></div>
             <img src="<?= base_url('/assets/images/cathcomlogo.jpg') ?>" alt="Logo" class="logo">
-            <h3 class="text-center mb-4" id="form-title">Admin Login</h3>
+            <h3 class="text-center mb-4" id="form-title">Admin Login</br>(Main Office & Council)</h3>
             <form id="auth-form" action="<?=site_url('auth/admin/login')?>" method="POST">
                 <div class="mb-3">
                     <label class="form-label">Departmental Reg Number</label>
@@ -112,45 +113,88 @@
     </div>
 
     <script>
-        document.querySelector('.toggle-form').addEventListener('click', function () {
-            let form = document.getElementById('auth-form');
-            let title = document.getElementById('form-title');
-            if (form.action.includes('login')) {
-                form.action = "<?=site_url('auth/admin/register')?>";
-                title.innerText = "Admin Registration";
-                form.innerHTML = `
-                    <div class="mb-3">
-                        <label class="form-label">Departmental Reg Number</label>
-                        <input type="text" class="form-control" name="deptcode" placeholder="Enter Reg Number" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Departmental Email</label>
-                        <input type="email" class="form-control" name="email" placeholder="Enter Email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" placeholder="Create a Password" required>
-                    </div>
-                    <button type="submit" class="btn btn-custom w-100">Sign Up</button>
-                `;
-                this.innerText = "Already have an Admin account? Login";
-            } else {
-                form.action = "<?=site_url('auth/admin/login')?>";
-                title.innerText = "Admin Login";
-                form.innerHTML = `
-                    <div class="mb-3">
-                        <label class="form-label">Departmental Reg Number</label>
-                        <input type="text" class="form-control" name="deptcode" placeholder="Enter Reg Number" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-control" name="password" placeholder="Enter Password" required>
-                    </div>
-                    <button type="submit" class="btn btn-custom w-100">Login</button>
-                `;
-                this.innerText = "Don't have an account? Sign up";
-            }
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector('.toggle-form').addEventListener('click', function () {
+        let form = document.getElementById('auth-form');
+        let title = document.getElementById('form-title');
+        let isLogin = form.getAttribute('action').includes('login');
+
+        // Get Base URL Dynamically
+        let baseUrl = "<?= site_url() ?>";
+        console.log(baseUrl);
+        form.setAttribute("method", "POST"); // Ensure POST method
+        // Toggle form action and title
+        form.setAttribute("action", isLogin ? baseUrl + "/auth/admin/register" : baseUrl + "/auth/admin/login");
+
+        title.innerText = isLogin ? "Admin Registration" : "Admin Login";
+
+        // Update form content dynamically
+        form.innerHTML = isLogin ? `
+            <div class="mb-3">
+                <label class="form-label">Select Position</label>
+                <select class="form-control" name="position" required>
+                    <option value="" disabled selected>Select a position</option>
+                    <option value="Chairperson">Chairperson (Chief Admin)</option>
+                    <option value="Vice Chairperson">Vice Chairperson</option>
+                    <option value="Secretary">Secretary</option>
+                    <option value="Vice Secretary">Vice Secretary</option>
+                    <option value="Treasurer">Treasurer</option>
+                    <option value="Small Christian Community Coordinator">Small Christian Community Coordinator</option>
+                    <option value="Liturgical Coordinator">Liturgical Coordinator</option>
+                    <option value="Organizing Secretary">Organizing Secretary</option>
+                    <option value="Assets Manager">Assets Manager</option>
+                    <option value="Hospitality Manager">Hospitality Manager</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Your Email</label>
+                <input type="email" class="form-control" name="email" placeholder="Email (Member account email)" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control password-field" name="password" placeholder="Create a Password" required>
+                    <span class="input-group-text toggle-password">&#128065;</span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-custom w-100">Sign Up</button>
+        ` : `
+            <div class="mb-3">
+                <label class="form-label">Departmental Reg Number</label>
+                <input type="text" class="form-control" name="deptcode" placeholder="Enter Reg Number" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control password-field" name="password" placeholder="Enter Password" required>
+                    <span class="input-group-text toggle-password">&#128065;</span>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-custom w-100">Login</button>
+        `;
+
+        // Update button text
+        this.innerText = isLogin ? "Already have an Admin account? Login" : "Don't have an account? Sign up";
+
+        // Attach password toggle functionality
+        attachPasswordToggle();
+    });
+
+    // Function to add password visibility toggle
+    function attachPasswordToggle() {
+        document.querySelectorAll(".toggle-password").forEach(toggle => {
+            toggle.addEventListener("click", function () {
+                let passwordInput = this.previousElementSibling;
+                passwordInput.type = passwordInput.type === "password" ? "text" : "password";
+                this.innerHTML = passwordInput.type === "password" ? "&#128065;" : "&#128064;"; // Eye icon toggle
+            });
         });
-    </script>
+    }
+
+    // Attach password toggle on initial load
+    attachPasswordToggle();
+});
+</script>
+
 </body>
 </html>
