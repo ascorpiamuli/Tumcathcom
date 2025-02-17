@@ -92,4 +92,12 @@ class LiturgicalDancersModel extends Model
         // Return the record if found
         return $dancerData ?: null;
     }
+    public function countRegisteredMembers(): int
+    {
+        return $this->countAll();
+    }
+    public function countActiveMembers(): int
+    {
+        return $this->where('status', 'active')->countAllResults();
+    }
 }

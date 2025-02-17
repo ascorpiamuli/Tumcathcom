@@ -35,9 +35,13 @@ class AdminAuth extends Auth
             $departmentcode = $this->request->getPost('deptcode');
             $password = $this->request->getPost('password');
             $adminuser = $this->adminAuthModel
-            ->select('admin_id, departmental_id, password')
+            ->select('admin_id, departmental_id,approval,suspended, password')
             ->where('departmental_id', $departmentcode)
             ->first();
+            if ($adminuser['suspended']==1) {
+                session()->setFlashdata('error', 'Account Suspended.Contact the Administrator.');
+                return redirect()->to('auth/admin/login');
+            }
         
     
             if ($adminuser && password_verify($password, $adminuser['password'])) {
@@ -51,9 +55,16 @@ class AdminAuth extends Auth
                     session()->setFlashdata('error', 'Failed to log you in. Try again later.');
                     return redirect()->to('/auth/login');
                 }
-    
-                session()->set('admin_id', $adminuser['admin_id']);
-                session()->set('admin_session_token', $sessionToken);
+                session()->set([
+                    'admin_session_token'=>$sessionToken,
+                    'admin_id' => $adminuser['admin_id'],
+                    'is_logged_in' => true,
+                    'last_activity' => time() // Store last activity time
+                ]);
+                if (!$adminuser['approval']) {
+                    session()->setFlashdata('info','Please wait for approval from the Chairpeson');
+                    return redirect()->to('/auth/admin/login');
+                }
     
                 // Log the successful session creation
                 log_message('info', "Session set for admin ID: {$adminuser['admin_id']} with session token: {$sessionToken}");
@@ -75,8 +86,7 @@ class AdminAuth extends Auth
     }
 
     public function register()
-    {
-        
+    { 
         if ($this->request->getMethod() == 'POST') {
             $position = $this->request->getPost('position');
             $email = $this->request->getPost('email');
@@ -90,22 +100,40 @@ class AdminAuth extends Auth
                 return redirect()->to('/auth/login');
             }
     
+            // Check if email or position already exists in adminAuthModel
+            $existingAdmin = $this->adminAuthModel
+                ->where('admin_email', $email)
+                ->orWhere('position', $position)
+                ->first();
+    
+            if ($existingAdmin) {
+                session()->setFlashdata('error', 'Email or position is already taken.');
+                return redirect()->back()->withInput();
+            }
+    
             // Generate Admin ID and Departmental ID
             $adminId = $member['user_id'];
             $departmentalId = generate_departmental_id($position);
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+    
             // Prepare admin data
             $adminData = [
-                'position'       =>$position,
-                'admin_id'        => $adminId,
-                'departmental_id' => $departmentalId,
-                'admin_email'     => $email,
-                'password'        => $hashedPassword,
-                'session_token'   => generateSessionToken()
+                'position'       => $position,
+                'admin_id'       => $adminId,
+                'departmental_id'=> $departmentalId,
+                'admin_email'    => $email,
+                'password'       => $hashedPassword,
+                'session_token'  => generateSessionToken()
             ];
     
             // Save to database
             $this->adminAuthModel->insert($adminData);
+            $admin = $this->adminAuthModel->getAdminById($adminId);
+    
+            if (!$admin['approval']) { // If approval is 0
+                session()->setFlashdata('success', 'Registration successful. Welcome!');
+                return redirect()->to('/admin/approval'); // Redirect to pending page
+            }
     
             session()->setFlashdata('success', 'Registration successful. Welcome!');
             return redirect()->to('/admin/dashboard');
@@ -113,6 +141,7 @@ class AdminAuth extends Auth
     
         return view('auth/admin/login'); 
     }
+    
     
     
     
@@ -125,32 +154,6 @@ class AdminAuth extends Auth
 
         // Render dashboard view
         return view('auth/admin/forgot_password');
-    }
-    public function logout()
-    {
-        // Get the current user's ID and session token
-        $userId = session()->get('user_id');
-        $sessionToken = session()->get('session_token');
-    
-        // Log logout attempt
-        log_message('info', "User with ID {$userId} is logging out");
-    
-        // Set a flash message for successful logout
-        session()->setFlashdata('success', 'Successfully Logged Out.');
-    
-        // Remove the session token from the database for the current user
-        $this->userAuthModel = new UserAuthenticationModel();
-        $this->userAuthModel->update($userId, ['session_token' => null]);
-    
-        // Remove session data from the browser session
-        session()->remove('user_id');
-        session()->remove('session_token');
-    
-        // Log out event
-        log_message('info', "User with ID {$userId} logged out successfully");
-    
-        // Redirect to login page
-        return redirect()->to('/auth/admin/login');
     }
     
 }

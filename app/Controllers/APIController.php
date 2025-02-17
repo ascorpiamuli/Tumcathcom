@@ -6,14 +6,17 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Database\BaseBuilder;
 use App\Models\AssetsModel;
+use App\Models\AdminAuthenticationModel;
 
 class APIController extends BaseController
 {
     protected $assetsModel;
+    protected $adminAuthModel;
     public function __construct()
     {
         // Load the AssetsModel
         $this->assetsModel = new AssetsModel();  // Note the corrected property name
+        $this->adminAuthModel=new AdminAuthenticationModel();
     }
     
     public function getJumuia()
@@ -190,4 +193,172 @@ class APIController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Failed to save the comment.']);
         }
     }
+    public function approveBooking($bookingId)
+    {
+        $session = session();
+        $loggedInAdminId = $session->get('admin_id');
+
+        // ✅ Fetch logged-in admin details
+        $loggedInAdmin = $this->adminAuthModel->where('admin_id', $loggedInAdminId)->first();
+        // Fetch bookings with the given booking ID
+        $bookings = $this->assetsModel->where('booking_id', $bookingId)->findAll();
+    
+        if (empty($bookings)) {
+            log_message('error', "Booking ID {$bookingId} not found for approval.");
+            return $this->response->setJSON(['success' => false, 'message' => 'Booking not found']);
+        }
+        // ✅ Check if the logged-in admin is the Chairperson
+        if (!$loggedInAdmin || $loggedInAdmin['position'] !== 'Assets Manager') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Only the Library & Assets Manager can Appprove Bookings.']);
+            return redirect()->to('admin/dashboard');
+        }
+    
+        // Update all matching records to "Approved"
+        $updated = $this->assetsModel->where('booking_id', $bookingId)->set(['booking_status' => 'Approved'])->update();
+    
+        if ($updated) {
+            log_message('info', "Booking ID {$bookingId} approved by Admin: " . session('username'));
+        } else {
+            log_message('error', "Failed to approve Booking ID {$bookingId}.");
+        }
+    
+        return $this->response->setJSON(['success' => $updated]);
+    }
+    
+    public function declineBooking($bookingId)
+    {
+        $session = session();
+        $loggedInAdminId = $session->get('admin_id');
+
+        // ✅ Fetch logged-in admin details
+        $loggedInAdmin = $this->adminAuthModel->where('admin_id', $loggedInAdminId)->first();
+        // Fetch bookings with the given booking ID
+        $bookings = $this->assetsModel->where('booking_id', $bookingId)->findAll();
+    
+        if (empty($bookings)) {
+            log_message('error', "Booking ID {$bookingId} not found for approval.");
+            return $this->response->setJSON(['success' => false, 'message' => 'Booking not found']);
+        }
+        // ✅ Check if the logged-in admin is the Chairperson
+        if (!$loggedInAdmin || $loggedInAdmin['position'] !== 'Assets Manager') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Only the Library & Assets Manager can Decline Bookings.']);
+            return redirect()->to('admin/dashboard');
+        }
+    
+        // Update all matching records to "Declined"
+        $updated = $this->assetsModel->where('booking_id', $bookingId)->set(['booking_status' => 'Declined'])->update();
+    
+        if ($updated) {
+            log_message('info', "Booking ID {$bookingId} declined by Admin: " . session('username'));
+        } else {
+            log_message('error', "Failed to decline Booking ID {$bookingId}.");
+        }
+    
+        return $this->response->setJSON(['success' => $updated]);
+    }
+    public function approve($adminId)
+    {
+        $session = session();
+        $loggedInAdminId = $session->get('admin_id');
+
+        // ✅ Fetch logged-in admin details
+        $loggedInAdmin = $this->adminAuthModel->where('admin_id', $loggedInAdminId)->first();
+
+        // ✅ Check if the user is the Chairperson
+        if (!$loggedInAdmin || $loggedInAdmin['position'] !== 'Chairperson') {
+            session()->setFlashdata('info', 'Only the Chairperson can approve admins.');
+            return redirect()->to('admin/dashboard');
+        }
+
+        log_message('debug', 'Received admin ID for approval: ' . $adminId);
+
+        // ✅ Fetch the admin record
+        $admin = $this->adminAuthModel->where('admin_id', $adminId)->first();
+        if (!$admin) {
+            session()->setFlashdata('error', 'Admin not found.');
+            return redirect()->to('admin/dashboard');
+        }
+
+        // ✅ Update approval status
+        $this->adminAuthModel->update($adminId, ['approval' => 1]);
+
+        log_message('debug', 'Admin approved successfully for ID: ' . $adminId);
+
+        session()->setFlashdata('success', 'Admin approved successfully.');
+        return redirect()->to('admin/dashboard');
+    }
+
+    public function decline($adminId)
+    {
+        $session = session();
+        $loggedInAdminId = $session->get('admin_id');
+
+        // ✅ Fetch logged-in admin details
+        $loggedInAdmin = $this->adminAuthModel->where('admin_id', $loggedInAdminId)->first();
+
+        // ✅ Check if the user is the Chairperson
+        if (!$loggedInAdmin || $loggedInAdmin['position'] !== 'Chairperson') {
+            session()->setFlashdata('info', 'Only the Chairperson can decline admins.');
+            return redirect()->to('admin/dashboard');
+        }
+
+        // ✅ Fetch the admin record
+        $admin = $this->adminAuthModel->where('admin_id', $adminId)->first();
+        if (!$admin) {
+            session()->setFlashdata('error', 'Admin not found.');
+            return redirect()->to('admin/dashboard');
+        }
+
+        // ✅ Delete the admin
+        $this->adminAuthModel->delete($adminId);
+
+        session()->setFlashdata('success', 'Admin declined successfully.');
+        return redirect()->to('admin/dashboard');
+    }
+    public function suspend($adminId)
+    {
+        $session = session();
+        $loggedInAdminId = $session->get('admin_id');
+    
+        // ✅ Fetch logged-in admin details
+        $loggedInAdmin = $this->adminAuthModel->where('admin_id', $loggedInAdminId)->first();
+    
+        // ✅ Check if the logged-in admin is the Chairperson
+        if (!$loggedInAdmin || $loggedInAdmin['position'] !== 'Chairperson') {
+            session()->setFlashdata('info', 'Only the Chairperson can suspend admins.');
+            return redirect()->to('admin/dashboard');
+        }
+    
+        // ✅ Prevent an admin from suspending themselves
+        if ($loggedInAdminId == $adminId) {
+            session()->setFlashdata('info', 'You cannot suspend yourself as the chief administrator.');
+            return redirect()->to('admin/dashboard');
+        }
+    
+        // ✅ Update approval status
+        $this->adminAuthModel->update($adminId, ['suspended' => 1]);
+        session()->setFlashdata('success', 'Admin suspended successfully.');
+    
+        return redirect()->to('admin/dashboard');
+    }
+    
+    public function reinstate($adminId){
+        $session = session();
+        $loggedInAdminId = $session->get('admin_id');
+        // ✅ Fetch logged-in admin details
+        $loggedInAdmin = $this->adminAuthModel->where('admin_id', $loggedInAdminId)->first();
+
+        // ✅ Check if the user is the Chairperson
+        if (!$loggedInAdmin || $loggedInAdmin['position'] !== 'Chairperson') {
+            session()->setFlashdata('info', 'Only the Chairperson can Re-instate admins/Members.');
+            return redirect()->to('admin/dashboard');
+        }
+        // ✅ Update approval status
+        $this->adminAuthModel->update($adminId, ['suspended' => 0]);
+        session()->setFlashdata('success', 'Admin Reinstated successfully.');
+        return redirect()->to('admin/dashboard');
+    }
+    
+    
+
 }

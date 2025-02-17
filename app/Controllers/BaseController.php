@@ -3,97 +3,99 @@
 namespace App\Controllers;
 
 use CodeIgniter\Controller;
-use CodeIgniter\HTTP\CLIRequest;
-use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use App\Models\UserAuthenticationModel;
 use App\Models\AdminAuthenticationModel;
-use Psr\Log\LoggerInterface;
+use App\Models\SuggestionsModel;
+use App\Controllers\Admin\AdminDashboard;
+use App\Traits\AnnouncementsTrait; // ✅ Import the trait
+
 
 /**
  * Class BaseController
  *
  * BaseController provides a convenient place for loading components
  * and performing functions that are needed by all your controllers.
- * Extend this class in any new controllers:
- *     class Home extends BaseController
- *
- * For security, be sure to declare any new methods as protected or private.
  */
 abstract class BaseController extends Controller
 {
-    /**
-     * Instance of the main Request object.
-     *
-     * @var CLIRequest|IncomingRequest
-     */
+  
     protected $request;
+    protected $helpers = ['general_helper', 'form_helper', 'session_helper'];
+    protected $userAuthModel;
+    protected $adminAuthModel;
+    protected $suggestionsModel;
+    protected $announcementsModel;
+ 
 
-    /**
-     * An array of helpers to be loaded automatically upon
-     * class instantiation. These helpers will be available
-     * to all other controllers that extend BaseController.
-     *
-     * @var list<string>
-     */
-    protected $helpers = ['general_helper','form_helper','session_helper'];
-
-    /**
-     * Be sure to declare properties for any property fetch you initialized.
-     * The creation of dynamic property is deprecated in PHP 8.2.
-     */
-    // protected $session;
-
-    /**
-     * @return void
-     */
-    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
-    {
-        // Do Not Edit This Line
-        parent::initController($request, $response, $logger);
-        // Validate session on each controller
-        $this->validateSession();
-
-        // Preload any models, libraries, etc., here.
+    public function __construct()
+    { 
+        $this->admindashboard=new AdminDashboard();
+        $this->userAuthModel = new UserAuthenticationModel();
+        $this->adminAuthModel = new AdminAuthenticationModel();
+        $this->sugggestionsModel=new SuggestionsModel();
     }
 
+    public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
+    {
+        parent::initController($request, $response, $logger);
+
+        // Validate session on each request
+        $this->validateSession();
+
+        // Update last activity time for online tracking
+        $this->updateUserActivity();
+        // ✅ Get latest announcement using the trait method
+      
+       
+
+}
+
     /**
-     * Session Validation Method (Called on each request)
+     * Validate the user's session on each request.
      */
     protected function validateSession()
     {
         $adminSessionToken = session()->get('admin_session_token');
-        $adminId = session()->get('admin_id');
-    
         $userSessionToken = session()->get('user_session_token');
-        $userId = session()->get('user_id');
-    
-        // Admin session validation
-        if ($adminSessionToken) {
-            $adminAuthModel = new AdminAuthenticationModel();
-            $admin = validateSessionToken($adminSessionToken, 'admin'); // Fixed token variable
 
+        if ($adminSessionToken) {
+            $admin = validateSessionToken($adminSessionToken, 'admin');
             if (!$admin) {
                 session()->setFlashdata('error', 'Admin session expired. Please log in again.');
                 session()->remove(['admin_id', 'admin_session_token']);
-                return redirect()->to('/auth/admin/login');
+                return redirect()->to('/auth/admin/login')->send();
             }
         }
 
-    
-        // User session validation
         if ($userSessionToken) {
-            $userAuthModel = new UserAuthenticationModel();
-            $user = validateSessionToken($userSessionToken,'user');
-    
+            $user = validateSessionToken($userSessionToken, 'user');
             if (!$user) {
                 session()->setFlashdata('error', 'User session expired. Please log in again.');
                 session()->remove(['user_id', 'user_session_token']);
-                return redirect()->to('/auth/login');
+                return redirect()->to('/auth/login')->send();
             }
         }
     }
+
+    /**
+     * Update the last activity timestamp for online status tracking.
+     */
+    protected function updateUserActivity()
+    {
+        if (session_status() === PHP_SESSION_ACTIVE) { // ✅ Check if session is active
+            if (session()->has('admin_id') && isset($this->adminAuthModel)) {
+                $this->adminAuthModel->update(session()->get('admin_id'), ['updated_at' => date('Y-m-d H:i:s')]);
+            } elseif (session()->has('user_id') && isset($this->userAuthModel)) {
+                $this->userAuthModel->update(session()->get('user_id'), ['updated_at' => date('Y-m-d H:i:s')]);
+            }
+        }
+    }
+    
+
+
     
 
     /**
@@ -122,11 +124,16 @@ abstract class BaseController extends Controller
     
         // Determine correct user ID
         if ($userType === 'admin') {
+            $adminAuthModel = new AdminAuthenticationModel();
             $user_id = $this->request->getGet('user_id') ?? $this->request->getPost('user_id') ?? $userId;
             $fullName = $this->userProfileModel->getUserFullNameById($user_id); // Fetch Admin Name
+            $admindata=$adminAuthModel->getAdminById($user_id);//admin data
+            $alladmindata=$adminAuthModel->getAllAdmins();
         } else {
             $user_id = $userId; // Normal user session
             $fullName = $this->userProfileModel->getUserFullNameById($user_id); // Fetch User Name
+            $admindata=null;
+            $alladmindata=null;
         }
         // Day mapping logic
         $dayMap = [
@@ -184,8 +191,15 @@ abstract class BaseController extends Controller
             ];
         }
     
-        // Fetch other data
+        $approvedadmins=$this->adminAuthModel->countActiveMembers();
+        $onlineadmins=$this->adminAuthModel->getAdminOnlineUsers();
+        $alladmins=$this->adminAuthModel->countRegisteredMembers();
         $assetsdata = $this->assetsModel->getAssetsData($fullName);
+        $assetshired=$this->assetsModel->countAllAssetsHired();
+        $assetspending=$this->assetsModel->countAllAssetsPending();
+        $assetsdeclined=$this->assetsModel->countAllAssetsDeclined();
+        $wholeassets = $this->assetsModel->getAllAssetsDataSorted();
+        $pendingassets = $this->assetsModel->getPendingAssets();
         $allassetsdata = $this->assetsModel->getAllAssetsData($fullName);
         $registrationdata = $this->semesterRegistrationModel->getRegistrationData($fullName);
         $confirmationdata = $this->liturgicalClassesModel->getConfirmationData($fullName);
@@ -194,6 +208,11 @@ abstract class BaseController extends Controller
         $catechistdata = $this->liturgicalCatechistModel->getCatechistData($fullName);
         $datelogged = $this->userProfileModel->getDateEnteredById($user_id);
         $userprofile = $this->userProfileModel->getUserProfileById($user_id);
+        $catechismmembers=$this->liturgicalCatechistModel->countRegisteredMembers();
+        $confirmationmembers=$this->liturgicalClassesModel->countRegisteredMembers();
+        $dancersmembers=$this->liturgicalDancersModel->countRegisteredMembers();
+        $serversmembers=$this->liturgicalServersModel->countRegisteredMembers();
+        $registeredmembers=$this->semesterRegistrationModel->countRegisteredMembers();
         $family = $this->userProfileModel->getFamilyNameById($user_id);
         $userauthprofile = $this->userAuthModel->getUserProfileById($user_id);
         $saint = $this->saintsModel->getSaintData($family);
@@ -201,10 +220,29 @@ abstract class BaseController extends Controller
         $saintoftheday = $serviceRequest->getSaintOfTheDay();
         $prayer = $this->prayerModel->getRandomPrayer();
         $saintofthedaydata = $this->saintsModel->getSaintDataBySaintName($saintoftheday);
+        $weeklypercentregistration=$this->semesterRegistrationModel->getWeeklyRegistrationPercentage();
         $todayscatholicdate = $this->CatholicCalendarModel->fetchCatholicDays(date('Y-m-d'));
+        $registrationfeetotal=$this->semesterRegistrationModel->countRegistrationFee();
     
         return array_merge($data, [
+            'onlineadmins'=>$onlineadmins,
+            'assetshired'=>$assetshired,
+            'assetspending'=>$assetspending,
+            'assetsdeclined'=>$assetsdeclined,
+            'pendingassets'=>$pendingassets,
+            'alladmins'=>$alladmins,
+            'approvedadmins'=>$approvedadmins,
+            'serversmembers'=>$serversmembers,
+            'alladmindata'=>$alladmindata,
+            'catechismmembers'=>$catechismmembers,
+            'dancersmembers'=>$dancersmembers,
+            'confirmationmembers'=>$confirmationmembers,
+            'registrationfeetotal'=>$registrationfeetotal,
+            'registeredmembers'=>$registeredmembers,
+            'weeklypercentregistration'=>$weeklypercentregistration,
+            'admindata'=>$admindata,
             'allassetsdata' => $allassetsdata,
+            'wholeassets'=>$wholeassets,
             'assetsdata' => $assetsdata,
             'confirmationdata' => $confirmationdata,
             'registrationdata' => $registrationdata,

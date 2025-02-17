@@ -29,20 +29,25 @@
         <div class="card-body p-0">
           <div style="overflow-x: auto; max-width: 100%;">
             <table class="table table-striped table-bordered table-sm" style="table-layout: fixed; width: 100%;">
-              <thead>
+            <thead>
                 <tr>
-                  <th style="width: 5%;">#</th>
-                  <th style="width: 13%;">Booking ID</th>
-                  <th>Assets Booked</th>
-                  <th>Location</th>
-                  <th>Date Booked</th>
-                  <th>Return Date</th>
-                  <th>Status</th>
-                  <th style="width: 30%;">Actions</th>
+                    <th style="width: 5%;">#</th>
+                    <th style="width: 13%;">Booking ID</th>
+                    <th>Assets Booked</th>
+                    <th>Location</th>
+                    <th>Date Booked</th>
+                    <th>Return Date</th>
+                    <th>Status</th>
+                    <th style="width: 30%;">Actions</th>
                 </tr>
-              </thead>
-                <tbody>
+            </thead>
+            <tbody>
                 <?php 
+                if (empty($allassetsdata)): ?>
+                    <tr>
+                        <td colspan="8" class="text-center"><strong>Bookings are not available.</strong></td>
+                    </tr>
+                <?php else: 
                     $renderedBookingIds = []; // Array to keep track of rendered booking IDs
                     $counter = 1; // Initialize the counter
 
@@ -55,7 +60,6 @@
                         // Add the booking ID to the array to mark it as rendered
                         $renderedBookingIds[] = $booking['booking_id'];
                     ?>
-
                     <tr class="align-middle">
                         <td><?= $counter++ ?>.</td> <!-- Use the counter variable -->
                         <td>
@@ -69,59 +73,59 @@
                         <td><?= htmlspecialchars($booking['booking_start_date']) ?></td>
                         <td><?= htmlspecialchars($booking['booking_end_date']) ?></td>
                         <td>
-                        <?php
-                            $status = strtolower(htmlspecialchars($booking['booking_status']));
-                            $badgeClass = 'badge ';
-                            switch ($status) {
-                                case 'pending':
-                                    $badgeClass .= 'text-bg-warning';
-                                    break;
-                                case 'declined':
-                                    $badgeClass .= 'text-bg-danger';
-                                    break;
-                                case 'approved':
-                                    $badgeClass .= 'text-bg-success';
-                                    break;
-                                case 'cancelled':
-                                    $badgeClass .= 'text-bg-secondary';
-                                    break;
-                                default:
-                                    $badgeClass .= 'text-bg-info';
-                            }
-                        ?>
-                        <span class="<?= $badgeClass ?>"><?= ucfirst($status) ?></span>
+                            <?php
+                                $status = strtolower(htmlspecialchars($booking['booking_status']));
+                                $badgeClass = 'badge ';
+                                switch ($status) {
+                                    case 'pending':
+                                        $badgeClass .= 'text-bg-warning';
+                                        break;
+                                    case 'declined':
+                                        $badgeClass .= 'text-bg-danger';
+                                        break;
+                                    case 'approved':
+                                        $badgeClass .= 'text-bg-success';
+                                        break;
+                                    case 'cancelled':
+                                        $badgeClass .= 'text-bg-secondary';
+                                        break;
+                                    default:
+                                        $badgeClass .= 'text-bg-info';
+                                }
+                            ?>
+                            <span class="<?= $badgeClass ?>"><?= ucfirst($status) ?></span>
                         </td>
                         <td>
-                        <div style="white-space: nowrap; display: flex; gap: 5px;">
-                            <button class="btn btn-info btn-sm download-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">Download</button>
-                            <button class="btn btn-secondary btn-sm view-assets-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">View Assets</button>
-                            <button class="btn btn-danger btn-sm cancel-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">Cancel Booking</button>
-                        </div>
+                            <div style="white-space: nowrap; display: flex; gap: 5px;">
+                                <button class="btn btn-info btn-sm download-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">Download</button>
+                                <button class="btn btn-secondary btn-sm view-assets-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">View Assets</button>
+                                <button class="btn btn-danger btn-sm cancel-btn" data-id="<?= htmlspecialchars($booking['booking_id']) ?>">Cancel Booking</button>
+                            </div>
                         </td>
                     </tr>
 
                     <!-- Hidden row for asset details -->
                     <tr class="assets-details" id="assets-details-<?= $booking['booking_id'] ?>" style="display: none;">
                         <td colspan="8">
-                        <!-- Here, you can display assets details in a table or other format -->
-                        <div>
-                            <h5>Assets for Booking ID: <?= htmlspecialchars($booking['booking_id']) ?></h5>
-                            <!-- Replace with real asset data -->
-                            <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                <th>Asset Name</th>
-                                <th>Asset Type</th>
-                                <th>Asset Quantity</th>
-                                <th>Asset Status</th>
-                                </tr>
-                            </thead>
-                            </table>
-                        </div>
+                            <div>
+                                <h5>Assets for Booking ID: <?= htmlspecialchars($booking['booking_id']) ?></h5>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Asset Name</th>
+                                            <th>Asset Type</th>
+                                            <th>Asset Quantity</th>
+                                            <th>Asset Status</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
                         </td>
                     </tr>
-                    <?php endforeach; ?>
-                </tbody>
+                <?php endforeach; 
+                endif; ?>
+            </tbody>
+
 
             </table>
             <footer class= "float-center text-center">

@@ -16,6 +16,9 @@ use App\Models\SemesterRegistrationModel;
 use App\Models\AssetsModel;
 use App\Controllers\FormsImplementor;
 use App\Models\AssetReportsModel;
+use App\Models\AdminAuthenticationModel;
+use App\Models\AnnouncementsModel;
+use App\Traits\AnnouncementsTrait;
 
 // Handle profile image upload
 use CodeIgniter\Images\Image;
@@ -23,7 +26,9 @@ use CodeIgniter\Images\Image;
 class Dashboard extends FormsImplementor
 {
     //Data Members(PROTECTED!!)
+    protected $announcementsModel;
     protected $userProfileModel;
+    protected $adminAuthModel;
     protected $assetReportsModel;
     protected $saintsModel;
     protected $userAuthModel;
@@ -36,10 +41,13 @@ class Dashboard extends FormsImplementor
     protected $liturgicalCatechistModel;
     protected $liturgicalServersModel;
     protected $assetsModel;
+    use AnnouncementsTrait;
 
     public function __construct()
     {
         // Initialize the models
+        $this->announcementsModel=new AnnouncementsModel();
+        $this->adminAuthModel=new AdminAuthenticationModel();
         $this->userAuthModel= new UserAuthenticationModel();
         $this->assetsModel=new AssetsModel();
         $this->semesterRegistrationModel=new SemesterRegistrationModel();
@@ -60,14 +68,26 @@ class Dashboard extends FormsImplementor
     {
         $session = session();
         $user_id = $session->get('user_id');
+        
+        // Check if the user is logged in
         if (!$user_id) {
             return redirect()->to('auth/login');
         }
+    
+        // Check if the announcement has already been fetched in this session
+        if (!$session->get('latest_announcement')) {
+            // Fetch the latest announcement and store it in the session
+            $this->getLatestAnnouncement();
+            $session->set('latest_announcement', true); // Mark it as fetched
+        }
+    
         // Get common data
         $data = $this->getCommonData('Dashboard');
+        
         // Pass data to the dashboard view
         return view('tabs/dashboard', $data);
     }
+    
     
     
 
@@ -214,7 +234,7 @@ class Dashboard extends FormsImplementor
             $session->setFlashData('success','Profile Data Updated Successfully.');
             return redirect()->to('/tabs/dashboard');
           }
-          $session->setFlashData('error','Error Updating Profile.');
+          //$session->setFlashData('error','Error Updating Profile.');
           return redirect()->to('/tabs/profile');
 
         }

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="<?= base_url('/assets/css/register.css') ?>">
 </head>
 <body>
-    <?= view('partials/messages') ?>
+
     
     <!-- Left Sidebar -->
     <div class="sidebar-left">

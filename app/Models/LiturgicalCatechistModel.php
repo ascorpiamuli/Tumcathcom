@@ -107,4 +107,12 @@ class LiturgicalCatechistModel extends Model
 
         return null; // If catechist not found, return null
     }
+    public function countRegisteredMembers(): int
+    {
+        return $this->countAll();
+    }
+    public function countActiveMembers(): int
+    {
+        return $this->where('status', 'active')->countAllResults();
+    }
 }

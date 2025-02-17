@@ -104,7 +104,7 @@
 </head>
 <body>
     <div class="container">
-    
+    <?= view('partials/messages') ?>
         <div class="card p-4 form-container form-login" id="form-container">
             <div class="cross-icon"><i class="fas fa-cross"></i></div>
             <img src="<?= base_url('/assets/images/cathcomlogo.jpg') ?>" alt="Logo" class="logo">

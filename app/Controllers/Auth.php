@@ -176,7 +176,11 @@ class Auth extends BaseController
         if ($this->request->getMethod() == 'POST') {
             $email= $this->request->getPost('email');
             $password = $this->request->getPost('password');
-    
+          //MVC Architecture Model databases,Views User Frotend and Controller Handles HTTP Requests and passes data to the views.
+          //CRUD Operations,use models.
+          //LOGICAL OPERATIONS,USE Controllers
+          //Authorizations ,use Middleware
+          //For UI,use views
             $userAuthModel = new UserAuthenticationModel();
             $user = $userAuthModel->select('user_id, password')->where('email', $email)->first();
     
@@ -269,7 +273,7 @@ class Auth extends BaseController
         } else {
             log_message('error', "Logout attempt failed - {$userType} ID is missing.");
         }
-    
+        $session->remove('latest_announcement');
         // Remove session data from the browser session
         $session->remove(['user_id', 'admin_id', 'session_token', 'user_type']);
     

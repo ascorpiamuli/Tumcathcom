@@ -76,4 +76,40 @@ class SemesterRegistrationModel extends Model
 
         return null; // If user not found, return null
     }
+    public function countRegisteredMembers(): int
+    {
+        return $this->countAll();
+    }
+    public function countActiveMembers(): int
+    {
+        return $this->where('status', 'active')->countAllResults();
+    }
+    public function getWeeklyRegistrationPercentage(): float
+    {
+        // Get total registered members
+        $totalMembers = (float) $this->countRegisteredMembers();
+    
+        // Get the number of members registered since last week
+        $lastWeek = date('Y-m-d H:i:s', strtotime('-7 days'));
+        $newRegistrations = $this->where('created_at >=', $lastWeek)->countAllResults();
+    
+        // Avoid division by zero
+        if ($totalMembers == 0) {
+            return  0.00;
+        }
+       
+       log_message('debug',$this->countRegistrationFee());
+       
+        // Calculate percentage and ensure it's a float with two decimal places
+        return (float) number_format(($newRegistrations / $totalMembers) * 100, 2, '.', '');
+    }
+    public function countRegistrationFee(): float
+    {
+        return (float) $this->selectSum('amount')->get()->getRow()->amount;
+    }
+    
+    
+
+
+
 }

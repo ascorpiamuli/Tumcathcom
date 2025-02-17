@@ -91,6 +91,14 @@ class LiturgicalClassesModel extends Model
         $confirmationData = $this->where('name', $fullName)->first();
         return $confirmationData ?: null;
     }
+    public function countRegisteredMembers(): int
+    {
+        return $this->countAll();
+    }
+    public function countActiveMembers(): int
+    {
+        return $this->where('status', 'active')->countAllResults();
+    }
 
 
 

@@ -9,7 +9,7 @@ class UserAuthenticationModel extends Model
 {
     protected $table = 'user_authentication';
     protected $primaryKey = 'user_id';
-    protected $allowedFields = ['user_id', 'username', 'email', 'phone_number', 'password', 'profile_completed', 'session_token'];
+    protected $allowedFields = ['user_id', 'username', 'email', 'phone_number', 'password','updated_at', 'profile_completed', 'session_token'];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

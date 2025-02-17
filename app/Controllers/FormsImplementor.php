@@ -102,13 +102,6 @@ abstract class FormsImplementor extends BaseController implements Forms
             $session->setFlashdata('errors', $this->validator->getErrors());
             return redirect()->back()->withInput();
         }
-    
-        // Ensure phone numbers are not the same
-        if ($this->request->getPost('yourphone') === $this->request->getPost('guardianphone')) {
-            $session->setFlashdata('error', 'Your phone number and guardian\'s phone number should not match.');
-            return redirect()->back()->withInput();
-        }
-    
         $formData = $this->storeFormData($registrationType, $session);
         if ($formData === null) {
             $session->setFlashdata('error', 'Invalid form data.');
@@ -332,9 +325,20 @@ abstract class FormsImplementor extends BaseController implements Forms
 
         // Get the current profile image name from the database
         $userId = session()->get('user_id');
+        $adminId=session()->get('admin_id');
+        
+        log_message('debug',$adminId);
+        
         $userProfileModel = new UserProfileModel();
-        $currentProfile = $userProfileModel->find($userId);
-        $currentProfileImage = $currentProfile['profile_image']; // Assuming this is the current image filename
+        if($adminId){
+            $currentProfile = $userProfileModel->find($adminId);
+            $currentProfileImage = $currentProfile['profile_image']; // Assuming this is the current image filename
+        }
+        else{
+            $currentProfile = $userProfileModel->find($userId);
+            $currentProfileImage = $currentProfile['profile_image']; // Assuming this is the current image filename
+        }
+
 
         // Handle the uploaded profile image
         $profileImageName = $this->request->getFile('profile_image');
@@ -390,12 +394,21 @@ abstract class FormsImplementor extends BaseController implements Forms
         try {
             log_message('info', 'Processing updates for user ID: ' . $userId);
 
-            if (!empty($authData)) {
-                $this->userAuthModel->update($userId, $authData);
-                log_message('info', 'user_auth updated successfully.');
-            }
 
-            $this->userProfileModel->update($userId, $profileData);
+            if ($adminId) {
+                if (!empty($authData)) {
+                    $this->userAuthModel->update($adminId, $authData);
+                    log_message('info', 'user_auth updated successfully.');
+                }
+                $this->userProfileModel->update($adminId, $profileData);
+            }else{
+                if (!empty($authData)) {
+                    $this->userAuthModel->update($userId, $authData);
+                    log_message('info', 'user_auth updated successfully.');
+                }
+                $this->userProfileModel->update($userId, $profileData);
+            }
+           
             log_message('info', 'user_profiles updated successfully.');
 
             $db->transComplete();

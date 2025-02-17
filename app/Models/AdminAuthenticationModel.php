@@ -9,7 +9,7 @@ class AdminAuthenticationModel extends Model
 {
     protected $table = 'admin_users';  // Admin table
     protected $primaryKey = 'admin_id'; 
-    protected $allowedFields = ['admin_id', 'departmental_id','position', 'admin_email', 'password', 'session_token'];
+    protected $allowedFields = ['admin_id', 'departmental_id','position', 'admin_email', 'password','suspended','updated_at', 'session_token','approval'];
     protected $useTimestamps = true;
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
@@ -19,10 +19,15 @@ class AdminAuthenticationModel extends Model
      */
     public function getAllAdmins()
     {
-        log_message('info', "Fetching all admin authentication records.");
-        return $this->findAll() ?: [];
+        return $this->db->table('admin_users')
+            ->select('admin_users.*, user_profiles.first_name, user_profiles.last_name, admin_users.approval')
+            ->join('user_profiles', 'user_profiles.user_id = admin_users.admin_id')
+            ->orderBy('admin_users.approval', 'ASC') // Sort by approval status (unapproved first)
+            ->get()
+            ->getResultArray();
     }
-
+    
+    
     /**
      * Get a single admin by ID
      */
@@ -59,4 +64,25 @@ class AdminAuthenticationModel extends Model
             return false;
         }
     }
+    public function countRegisteredMembers(): int
+    {
+        return $this->countAll();
+    }
+    public function countActiveMembers(): int
+    {
+        return $this->where('approval', 1)->countAllResults();
+    }
+    public function getAdminOnlineUsers()
+    {
+        $oneDayAgo = date('Y-m-d H:i:s', strtotime('-1 day')); // Fetch users from the past 24 hours
+    
+        return $this->select('admin_users.admin_id, admin_users.updated_at, CONCAT(user_profiles.first_name, " ", user_profiles.last_name) AS full_name')
+                    ->join('user_profiles', 'user_profiles.user_id = admin_users.admin_id') // Ensuring correct join
+                    ->where('admin_users.updated_at >', $oneDayAgo)
+                    ->orderBy('admin_users.updated_at', 'DESC') // Order by last activity (most recent first)
+                    ->findAll();
+    }
+    
+    
+    
 }
